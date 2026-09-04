@@ -705,7 +705,7 @@ feat: add telemetry event model
 
 ---
 
-## TASK-071 — Criar Execution Context
+## [x] TASK-071 — Criar Execution Context
 
 **Prioridade:** P0  
 **Dependências:** TASK-070

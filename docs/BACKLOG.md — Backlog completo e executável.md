@@ -375,7 +375,7 @@ feat: add filesystem read tool
 
 ---
 
-## TASK-031 — Implementar escrita de arquivos
+## [x] TASK-031 — Implementar escrita de arquivos
 
 **Prioridade:** P0  
 **Dependências:** TASK-030

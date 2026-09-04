@@ -935,7 +935,7 @@ feat: persist execution records
 
 ---
 
-## TASK-083 — Criar tabela model_runs
+## [x] TASK-083 — Criar tabela model_runs
 
 **Prioridade:** P0  
 **Dependências:** TASK-082

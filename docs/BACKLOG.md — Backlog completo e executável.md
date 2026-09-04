@@ -646,7 +646,7 @@ feat: add validation runner
 
 ---
 
-## TASK-061 — Integração do Harness com validação
+## [x] TASK-061 — Integração do Harness com validação
 
 **Prioridade:** P0  
 **Dependências:** TASK-060

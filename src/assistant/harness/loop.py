@@ -9,6 +9,7 @@ from enum import Enum, auto
 from typing import Any
 
 from assistant.config.settings import HarnessSettings
+from assistant.validation.runner import ValidationRunner
 
 logger = logging.getLogger(__name__)
 
@@ -27,13 +28,19 @@ class HarnessState(Enum):
 class Harness:
     """Controla o loop de execução garantindo que as regras sejam seguidas."""
 
-    def __init__(self, settings: HarnessSettings | None = None) -> None:
+    def __init__(
+        self,
+        settings: HarnessSettings | None = None,
+        validation_runner: ValidationRunner | None = None
+    ) -> None:
         """Inicializa o Harness.
 
         Args:
             settings: Configurações do Harness. Se omitido, usa padrões.
+            validation_runner: Executor de validações (opcional).
         """
         self._settings = settings or HarnessSettings()
+        self._validation_runner = validation_runner
         self._state = HarnessState.PLAN
         self._iterations = 0
         self._max_iterations = self._settings.max_iterations
@@ -44,7 +51,7 @@ class Harness:
             HarnessState.PLAN: lambda: HarnessState.ACT,
             HarnessState.ACT: lambda: HarnessState.OBSERVE,
             HarnessState.OBSERVE: lambda: HarnessState.VERIFY,
-            HarnessState.VERIFY: lambda: HarnessState.COMPLETE,
+            HarnessState.VERIFY: self._default_verify_handler,
             HarnessState.FIX: lambda: HarnessState.ACT,
         }
 
@@ -52,6 +59,20 @@ class Harness:
     def state(self) -> HarnessState:
         """Estado atual."""
         return self._state
+
+    def _default_verify_handler(self) -> HarnessState:
+        """Tratador padrão para o estado VERIFY usando ValidationRunner."""
+        if not self._validation_runner:
+            return HarnessState.COMPLETE
+
+        results = self._validation_runner.run_all()
+        # Se qualquer validação falhar, volta para FIX
+        for result in results.values():
+            if not result.success:
+                logger.info("Validação %s falhou. Indo para FIX.", result.tool)
+                return HarnessState.FIX
+
+        return HarnessState.COMPLETE
 
     def set_handler(self, state: HarnessState, handler: Callable[[], HarnessState]) -> None:
         """Define o tratador para um estado específico."""

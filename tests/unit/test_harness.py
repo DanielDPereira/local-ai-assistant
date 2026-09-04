@@ -6,6 +6,7 @@ from unittest import mock
 
 from assistant.config.settings import HarnessSettings
 from assistant.harness.loop import Harness, HarnessState
+from assistant.validation.runner import ValidationResult, ValidationRunner
 
 
 class TestHarness:
@@ -125,3 +126,35 @@ class TestHarness:
         assert result["final_state"] == "ERROR"
         assert result["loop_detected"] is True
         assert result["iterations"] < 10
+
+    def test_verify_handler_success(self) -> None:
+        """Testa se o estado VERIFY vai para COMPLETE quando as validações passam."""
+        mock_runner = mock.MagicMock(spec=ValidationRunner)
+        mock_runner.run_all.return_value = {
+            "Ruff": ValidationResult(tool="Ruff", success=True, output="", duration=0.1)
+        }
+
+        harness = Harness(validation_runner=mock_runner)
+        # Ao rodar, PLAN -> ACT -> OBSERVE -> VERIFY (passa) -> COMPLETE
+        result = harness.run()
+
+        assert result["success"] is True
+        assert result["final_state"] == "COMPLETE"
+        mock_runner.run_all.assert_called_once()
+
+    def test_verify_handler_failure(self) -> None:
+        """Testa se o estado VERIFY vai para FIX quando uma validação falha."""
+        mock_runner = mock.MagicMock(spec=ValidationRunner)
+
+        # 1ª vez falha, 2ª vez sucesso
+        mock_runner.run_all.side_effect = [
+            {"Ruff": ValidationResult(tool="Ruff", success=False, output="Erro", duration=0.1)},
+            {"Ruff": ValidationResult(tool="Ruff", success=True, output="Ok", duration=0.1)}
+        ]
+
+        harness = Harness(validation_runner=mock_runner)
+        result = harness.run()
+
+        assert result["success"] is True
+        assert result["final_state"] == "COMPLETE"
+        assert mock_runner.run_all.call_count == 2

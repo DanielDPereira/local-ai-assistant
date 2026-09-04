@@ -473,7 +473,7 @@ feat: add terminal execution tool
 
 ---
 
-## TASK-041 — Implementar política de comandos
+## [x] TASK-041 — Implementar política de comandos
 
 **Prioridade:** P0  
 **Dependências:** TASK-040

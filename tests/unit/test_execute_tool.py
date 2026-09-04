@@ -97,3 +97,21 @@ class TestExecuteCommandTool:
         assert result.success is False
         assert result.error_code == "UNKNOWN_ERROR"
         assert "OS failed" in result.output
+
+    @pytest.mark.parametrize("cmd", [
+        "sudo rm -rf /",
+        "su -c 'echo hacked'",
+        "rm -rf ./tmp",
+        "rmdir /s /q C:\\",
+        "format C:",
+        "mkfs.ext4 /dev/sda",
+        "dd if=/dev/zero of=/dev/sda",
+        "echo crash > /dev/sda",
+    ])
+    def test_blocked_commands(self, tool: ExecuteCommandTool, cmd: str) -> None:
+        """Testa o bloqueio de comandos perigosos."""
+        result = tool.execute(command=cmd)
+
+        assert result.success is False
+        assert result.error_code == "POLICY_VIOLATION"
+        assert "Comando bloqueado" in result.output

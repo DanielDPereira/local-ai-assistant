@@ -1684,7 +1684,7 @@ feat: add semantic git commits
 
 ---
 
-## TASK-134 — Push controlado
+## [x] TASK-134 — Push controlado
 
 **Prioridade:** P1
 

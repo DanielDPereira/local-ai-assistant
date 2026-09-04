@@ -136,3 +136,29 @@ class TestTelemetryTracker:
         assert events[2].event_type == EventType.TOOL_END
         assert events[2].status == EventStatus.ERROR
         assert events[2].metadata["error"] == "Perm denied"
+
+    def test_track_harness_iteration(self) -> None:
+        """Verifica o registro de iteração do harness."""
+        tracker = TelemetryTracker()
+        context = ExecutionContext(task_type="coding", model="qwen")
+        start = time.monotonic()
+
+        tracker.track_harness_iteration(
+            context,
+            iteration=1,
+            start_time=start,
+            from_state="PLAN",
+            to_state="ACT",
+            error=None,
+            is_retry=False
+        )
+
+        events = tracker.get_events()
+        assert len(events) == 1
+        evt = events[0]
+        assert evt.event_type == EventType.STATE_TRANSITION
+        assert evt.status == EventStatus.OK
+        assert evt.metadata["iteration"] == 1
+        assert evt.metadata["from_state"] == "PLAN"
+        assert evt.metadata["to_state"] == "ACT"
+        assert evt.metadata["is_retry"] is False

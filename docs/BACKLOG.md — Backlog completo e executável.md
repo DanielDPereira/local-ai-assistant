@@ -812,7 +812,7 @@ feat: add tool execution telemetry
 
 ---
 
-## TASK-075 — Telemetria do Harness
+## [x] TASK-075 — Telemetria do Harness
 
 **Prioridade:** P0  
 **Dependências:** TASK-071, TASK-050

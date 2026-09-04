@@ -1075,7 +1075,7 @@ feat: add hardware monitoring
 
 ---
 
-## TASK-091 — Criar tabela hardware_samples
+## [x] TASK-091 — Criar tabela hardware_samples
 
 **Prioridade:** P1  
 **Dependências:** TASK-090, TASK-080

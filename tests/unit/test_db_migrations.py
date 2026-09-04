@@ -102,3 +102,7 @@ class TestMigrationRunner:
             # Garante que a tabela validation_runs existe
             cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='validation_runs'")
             assert cursor.fetchone() is not None
+
+            # Garante que a tabela hardware_samples existe
+            cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='hardware_samples'")
+            assert cursor.fetchone() is not None

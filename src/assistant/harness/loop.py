@@ -9,6 +9,8 @@ from enum import Enum, auto
 from typing import Any
 
 from assistant.config.settings import HarnessSettings
+from assistant.telemetry.context import ExecutionContext
+from assistant.telemetry.tracker import TelemetryTracker
 from assistant.validation.runner import ValidationRunner
 
 logger = logging.getLogger(__name__)
@@ -31,16 +33,22 @@ class Harness:
     def __init__(
         self,
         settings: HarnessSettings | None = None,
-        validation_runner: ValidationRunner | None = None
+        validation_runner: ValidationRunner | None = None,
+        telemetry_tracker: TelemetryTracker | None = None,
+        execution_context: ExecutionContext | None = None,
     ) -> None:
         """Inicializa o Harness.
 
         Args:
             settings: Configurações do Harness. Se omitido, usa padrões.
             validation_runner: Executor de validações (opcional).
+            telemetry_tracker: Rastreador de telemetria opcional.
+            execution_context: Contexto de execução (obrigatório se telemetry for usado).
         """
         self._settings = settings or HarnessSettings()
         self._validation_runner = validation_runner
+        self._tracker = telemetry_tracker
+        self._context = execution_context
         self._state = HarnessState.PLAN
         self._iterations = 0
         self._max_iterations = self._settings.max_iterations
@@ -133,18 +141,37 @@ class Harness:
             self._iterations += 1
             handler = self._handlers.get(self._state)
 
-            if not handler:
-                logger.error("Nenhum handler para o estado %s", self._state)
-                self._state = HarnessState.ERROR
-                break
+            iter_start = time.monotonic()
+            current_state_name = self._state.name
+            error_msg = None
+            next_state_name = "ERROR"
 
-            try:
-                # Executa a ação do estado atual e obtém o próximo estado
-                next_state = handler()
-                self._state = next_state
-            except Exception as e:
-                logger.exception("Erro durante o estado %s: %s", self._state, e)
+            if not handler:
+                error_msg = f"Nenhum handler para o estado {current_state_name}"
+                logger.error(error_msg)
                 self._state = HarnessState.ERROR
+            else:
+                try:
+                    # Executa a ação do estado atual e obtém o próximo estado
+                    next_state = handler()
+                    self._state = next_state
+                    next_state_name = next_state.name
+                except Exception as e:
+                    error_msg = str(e)
+                    logger.exception("Erro durante o estado %s: %s", current_state_name, e)
+                    self._state = HarnessState.ERROR
+
+            if self._tracker and self._context:
+                is_retry = (self._state == HarnessState.FIX)
+                self._tracker.track_harness_iteration(
+                    self._context,
+                    iteration=self._iterations,
+                    start_time=iter_start,
+                    from_state=current_state_name,
+                    to_state=next_state_name,
+                    error=error_msg,
+                    is_retry=is_retry
+                )
 
         return {
             "final_state": self._state.name,

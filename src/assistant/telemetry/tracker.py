@@ -143,3 +143,29 @@ class TelemetryTracker:
             metadata=meta,
         )
         self.record_event(event)
+
+    def track_harness_iteration(self, context: ExecutionContext, iteration: int, start_time: float, from_state: str, to_state: str, error: str | None = None, is_retry: bool = False) -> None:
+        """Registra uma iteração do Harness."""
+        end_time = time.monotonic()
+        duration = end_time - start_time
+
+        meta: dict[str, Any] = {
+            "iteration": iteration,
+            "duration": duration,
+            "from_state": from_state,
+            "to_state": to_state,
+            "is_retry": is_retry,
+        }
+
+        status = EventStatus.OK
+        if error:
+            status = EventStatus.ERROR
+            meta["error"] = error
+
+        event = TelemetryEvent(
+            execution_id=context.execution_id,
+            event_type=EventType.STATE_TRANSITION,
+            status=status,
+            metadata=meta,
+        )
+        self.record_event(event)

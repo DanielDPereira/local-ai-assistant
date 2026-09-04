@@ -1225,7 +1225,7 @@ feat: aggregate computational costs
 
 ---
 
-## TASK-110 — Criar FastAPI
+## [x] TASK-110 — Criar FastAPI
 
 **Prioridade:** P1  
 **Dependências:** TASK-082

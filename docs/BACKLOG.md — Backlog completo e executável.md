@@ -1108,7 +1108,7 @@ feat: persist hardware samples
 
 ---
 
-## TASK-092 — Agregar hardware por execução
+## [x] TASK-092 — Agregar hardware por execução
 
 **Prioridade:** P1  
 **Dependências:** TASK-091

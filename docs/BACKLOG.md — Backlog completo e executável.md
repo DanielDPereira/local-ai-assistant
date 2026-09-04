@@ -129,7 +129,7 @@ feat: initialize assistant project
 
 ---
 
-## TASK-002 — Configuração central
+## [x] TASK-002 — Configuração central
 
 **Prioridade:** P0  
 **Dependências:** TASK-001

@@ -992,7 +992,7 @@ feat: persist tool runs
 
 ---
 
-## TASK-085 — Criar tabela harness_iterations
+## [x] TASK-085 — Criar tabela harness_iterations
 
 **Prioridade:** P0  
 **Dependências:** TASK-082
@@ -1019,7 +1019,7 @@ feat: persist harness iterations
 
 ---
 
-## TASK-086 — Criar tabela validation_runs
+## [x] TASK-086 — Criar tabela validation_runs
 
 **Prioridade:** P1  
 **Dependências:** TASK-060

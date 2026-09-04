@@ -106,3 +106,33 @@ class TestTelemetryTracker:
         assert err_evt.event_type == EventType.MODEL_RESPONSE
         assert err_evt.status == EventStatus.ERROR
         assert err_evt.metadata["error"] == "Timeout"
+
+    def test_track_tool(self) -> None:
+        """Verifica o registro de ferramentas."""
+        tracker = TelemetryTracker()
+        context = ExecutionContext(task_type="coding", model="qwen")
+        start = time.monotonic()
+
+        # Start
+        tracker.track_tool_start(context, tool_name="execute", operation="ls", start_time=start)
+        events = tracker.get_events()
+        assert len(events) == 1
+        assert events[0].event_type == EventType.TOOL_START
+        assert events[0].metadata["tool_name"] == "execute"
+        assert events[0].metadata["operation"] == "ls"
+
+        # End Success
+        tracker.track_tool_end(context, tool_name="execute", operation="ls", start_time=start, success=True)
+        events = tracker.get_events()
+        assert len(events) == 2
+        assert events[1].event_type == EventType.TOOL_END
+        assert events[1].status == EventStatus.OK
+        assert events[1].metadata["duration"] >= 0
+
+        # End Error
+        tracker.track_tool_end(context, tool_name="execute", operation="ls", start_time=start, success=False, error="Perm denied")
+        events = tracker.get_events()
+        assert len(events) == 3
+        assert events[2].event_type == EventType.TOOL_END
+        assert events[2].status == EventStatus.ERROR
+        assert events[2].metadata["error"] == "Perm denied"

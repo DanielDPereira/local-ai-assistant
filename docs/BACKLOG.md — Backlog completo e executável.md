@@ -789,7 +789,7 @@ feat: add model execution telemetry
 
 ---
 
-## TASK-074 — Telemetria de ferramentas
+## [x] TASK-074 — Telemetria de ferramentas
 
 **Prioridade:** P0  
 **Dependências:** TASK-072, TASK-021

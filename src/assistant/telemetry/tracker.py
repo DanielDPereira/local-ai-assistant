@@ -103,3 +103,43 @@ class TelemetryTracker:
             metadata=meta,
         )
         self.record_event(event)
+
+    def track_tool_start(self, context: ExecutionContext, tool_name: str, operation: str, start_time: float) -> None:
+        """Registra o início da execução de uma ferramenta."""
+        meta = {
+            "tool_name": tool_name,
+            "operation": operation,
+            "start_time": start_time,
+        }
+        event = TelemetryEvent(
+            execution_id=context.execution_id,
+            event_type=EventType.TOOL_START,
+            status=EventStatus.OK,
+            metadata=meta,
+        )
+        self.record_event(event)
+
+    def track_tool_end(self, context: ExecutionContext, tool_name: str, operation: str, start_time: float, success: bool, error: str | None = None) -> None:
+        """Registra o fim da execução de uma ferramenta."""
+        end_time = time.monotonic()
+        duration = end_time - start_time
+
+        meta: dict[str, Any] = {
+            "tool_name": tool_name,
+            "operation": operation,
+            "duration": duration,
+        }
+
+        if success:
+            status = EventStatus.OK
+        else:
+            status = EventStatus.ERROR
+            meta["error"] = error
+
+        event = TelemetryEvent(
+            execution_id=context.execution_id,
+            event_type=EventType.TOOL_END,
+            status=status,
+            metadata=meta,
+        )
+        self.record_event(event)

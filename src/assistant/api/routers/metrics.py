@@ -117,3 +117,40 @@ async def get_execution(
         raise HTTPException(status_code=404, detail="Execution not found")
 
     return dict(row)
+
+
+@router.get("/models")
+async def get_models_metrics(
+    db: DatabaseConnection = Depends(get_db)  # noqa: B008
+) -> dict[str, Any]:
+    """Retorna métricas agregadas por modelo."""
+    query = """
+    SELECT
+        model,
+        COUNT(*) as total_runs,
+        SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successful_runs,
+        SUM(CASE WHEN success = 0 THEN 1 ELSE 0 END) as failed_runs,
+        AVG(duration_ms) as avg_duration_ms,
+        AVG(tokens_per_second) as avg_tokens_per_second,
+        SUM(total_tokens) as total_tokens
+    FROM model_runs
+    GROUP BY model
+    ORDER BY total_runs DESC
+    """
+
+    with db.get_connection() as conn:
+        cursor = conn.execute(query)
+        rows = [dict(row) for row in cursor.fetchall()]
+
+    # Process rows
+    for row in rows:
+        total = row["total_runs"]
+        success = row["successful_runs"] or 0
+        row["success_rate"] = (success / total) * 100.0 if total > 0 else 0.0
+        row["avg_duration_ms"] = row["avg_duration_ms"] or 0.0
+        row["avg_tokens_per_second"] = row["avg_tokens_per_second"] or 0.0
+        row["total_tokens"] = row["total_tokens"] or 0
+        row["successful_runs"] = success
+        row["failed_runs"] = row["failed_runs"] or 0
+
+    return {"items": rows}

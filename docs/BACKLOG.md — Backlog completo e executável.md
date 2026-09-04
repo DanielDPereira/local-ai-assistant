@@ -736,7 +736,7 @@ feat: add execution context
 
 ---
 
-## TASK-072 — Registrar início e término
+## [x] TASK-072 — Registrar início e término
 
 **Prioridade:** P0  
 **Dependências:** TASK-071

@@ -2,6 +2,7 @@
 
 from assistant.telemetry.context import ExecutionContext, ExecutionStatus
 from assistant.telemetry.event import EventStatus, EventType, TelemetryEvent
+from assistant.telemetry.tracker import TelemetryTracker
 
 __all__ = [
     "EventStatus",
@@ -9,4 +10,5 @@ __all__ = [
     "ExecutionContext",
     "ExecutionStatus",
     "TelemetryEvent",
+    "TelemetryTracker",
 ]

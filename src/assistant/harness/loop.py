@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from collections.abc import Callable
 from enum import Enum, auto
 from typing import Any
@@ -36,6 +37,7 @@ class Harness:
         self._state = HarnessState.PLAN
         self._iterations = 0
         self._max_iterations = self._settings.max_iterations
+        self._timeout_seconds = self._settings.timeout_seconds
         # Handlers mockáveis temporariamente
         self._handlers: dict[HarnessState, Callable[[], HarnessState]] = {
             HarnessState.PLAN: lambda: HarnessState.ACT,
@@ -63,7 +65,17 @@ class Harness:
         self._state = HarnessState.PLAN
         self._iterations = 0
 
+        start_time = time.monotonic()
+        timeout_reached = False
+
         while self._state not in (HarnessState.COMPLETE, HarnessState.ERROR):
+            elapsed_time = time.monotonic() - start_time
+            if elapsed_time > self._timeout_seconds:
+                logger.warning("Timeout global atingido (%.2fs > %ds).", elapsed_time, self._timeout_seconds)
+                self._state = HarnessState.ERROR
+                timeout_reached = True
+                break
+
             if self._iterations >= self._max_iterations:
                 logger.warning("Limite de iterações atingido (%d).", self._max_iterations)
                 self._state = HarnessState.ERROR
@@ -89,4 +101,6 @@ class Harness:
             "final_state": self._state.name,
             "iterations": self._iterations,
             "success": self._state == HarnessState.COMPLETE,
+            "timeout": timeout_reached,
+            "elapsed_time": time.monotonic() - start_time,
         }

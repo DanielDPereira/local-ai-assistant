@@ -572,7 +572,7 @@ feat: add harness iteration limit
 
 ---
 
-## TASK-052 — Timeout global
+## [x] TASK-052 — Timeout global
 
 **Prioridade:** P0  
 **Dependências:** TASK-050

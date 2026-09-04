@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local AI Assistant Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>Local AI</h2>
+                <span class="badge">v0.1.0</span>
+            </div>
+            <nav class="main-nav">
+                <a href="#overview" class="nav-item active" data-target="overview">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Overview
+                </a>
+                <a href="#executions" class="nav-item" data-target="executions">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    Executions
+                </a>
+                <a href="#models" class="nav-item" data-target="models">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                    Models
+                </a>
+                <a href="#costs" class="nav-item" data-target="costs">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Costs
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <header class="topbar">
+                <h1 id="page-title">Overview</h1>
+                <div class="system-status">
+                    <span class="status-indicator online"></span>
+                    <span id="status-text">System Online</span>
+                </div>
+            </header>
+            
+            <div id="loading-state" class="loading-state hidden">
+                <div class="spinner"></div>
+                <p>Loading data...</p>
+            </div>
+            
+            <div id="error-state" class="error-state hidden">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <h3>Failed to load data</h3>
+                <p id="error-message">Connection error</p>
+                <button id="retry-btn" class="btn">Retry</button>
+            </div>
+            
+            <div id="content-area" class="content-area">
+                <!-- Dynamic content injected here -->
+            </div>
+        </main>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -673,7 +673,7 @@ Esta Epic é obrigatória antes do desenvolvimento do dashboard.
 
 ---
 
-## TASK-070 — Criar modelo de evento
+## [x] TASK-070 — Criar modelo de evento
 
 **Prioridade:** P0  
 **Dependências:** TASK-050

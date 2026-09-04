@@ -404,7 +404,7 @@ feat: add filesystem write tool
 
 ---
 
-## TASK-032 — Implementar listagem
+## [x] TASK-032 — Implementar listagem
 
 **Prioridade:** P0  
 **Dependências:** TASK-030

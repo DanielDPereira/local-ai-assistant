@@ -1644,7 +1644,7 @@ feat: add git status tool
 
 ---
 
-## TASK-131 — Git diff
+## [x] TASK-131 — Git diff
 
 **Prioridade:** P1
 

@@ -1443,7 +1443,7 @@ feat: add dashboard foundation
 
 ---
 
-## TASK-121 — Dashboard Overview
+## [x] TASK-121 — Dashboard Overview
 
 **Prioridade:** P1  
 **Dependências:** TASK-111, TASK-120

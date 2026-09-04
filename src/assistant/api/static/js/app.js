@@ -121,27 +121,63 @@ class DashboardApp {
         this.showLoading();
         
         try {
-            let data;
-            
-            // For now, since endpoints are not returning real HTML,
-            // we just show a placeholder until we implement each view
-            // in subsequent tasks.
-            this.elements.contentArea.innerHTML = `
-                <div class="dashboard-grid">
-                    <div class="card">
-                        <h3>View: ${view}</h3>
-                        <p style="color: var(--text-muted); margin-top: 8px;">
-                            This view will be implemented in upcoming tasks.
-                        </p>
+            if (view === 'overview') {
+                await this.renderOverview();
+            } else {
+                this.elements.contentArea.innerHTML = `
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <h3>View: ${view}</h3>
+                            <p style="color: var(--text-muted); margin-top: 8px;">
+                                This view will be implemented in upcoming tasks.
+                            </p>
+                        </div>
                     </div>
-                </div>
-            `;
-            
-            this.showContent();
+                `;
+                this.showContent();
+            }
         } catch (error) {
             console.error('Error loading view:', error);
             this.showError(`Failed to load ${view} data: ${error.message}`);
         }
+    }
+    
+    async renderOverview() {
+        const response = await fetch('/api/metrics/overview');
+        if (!response.ok) throw new Error('Failed to fetch overview data');
+        
+        const data = await response.json();
+        
+        this.elements.contentArea.innerHTML = `
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Total Executions</span>
+                    <span class="stat-value">${data.total_executions}</span>
+                </div>
+                <div class="stat-card success">
+                    <span class="stat-label">Success Rate</span>
+                    <span class="stat-value">${data.success_rate.toFixed(1)}%</span>
+                </div>
+                <div class="stat-card danger">
+                    <span class="stat-label">Failed Executions</span>
+                    <span class="stat-value">${data.failed_executions}</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Avg Duration</span>
+                    <span class="stat-value">${(data.avg_duration_ms / 1000).toFixed(2)}s</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Tokens</span>
+                    <span class="stat-value">${data.total_tokens.toLocaleString()}</span>
+                </div>
+                <div class="stat-card warning">
+                    <span class="stat-label">Estimated Cost</span>
+                    <span class="stat-value">$${data.total_cost.toFixed(4)}</span>
+                </div>
+            </div>
+        `;
+        
+        this.showContent();
     }
 }
 

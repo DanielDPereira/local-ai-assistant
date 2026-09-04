@@ -38,6 +38,7 @@ class Harness:
         self._iterations = 0
         self._max_iterations = self._settings.max_iterations
         self._timeout_seconds = self._settings.timeout_seconds
+        self._action_history: list[str] = []
         # Handlers mockáveis temporariamente
         self._handlers: dict[HarnessState, Callable[[], HarnessState]] = {
             HarnessState.PLAN: lambda: HarnessState.ACT,
@@ -56,6 +57,25 @@ class Harness:
         """Define o tratador para um estado específico."""
         self._handlers[state] = handler
 
+    def record_action(self, action_signature: str) -> None:
+        """Registra uma ação executada pelo agente para detecção de loops.
+
+        Args:
+            action_signature: Representação em string da ação (ex: 'read_file({"path": "x"})').
+        """
+        self._action_history.append(action_signature)
+
+    def _detect_loop(self) -> bool:
+        """Verifica se há um loop baseado nas últimas ações.
+
+        Retorna True se as últimas 3 ações forem idênticas.
+        """
+        if len(self._action_history) >= 3:
+            last_3 = self._action_history[-3:]
+            if last_3[0] == last_3[1] == last_3[2]:
+                return True
+        return False
+
     def run(self) -> dict[str, Any]:
         """Executa o loop até atingir COMPLETE, ERROR ou o limite de iterações.
 
@@ -64,9 +84,11 @@ class Harness:
         """
         self._state = HarnessState.PLAN
         self._iterations = 0
+        self._action_history.clear()
 
         start_time = time.monotonic()
         timeout_reached = False
+        loop_detected = False
 
         while self._state not in (HarnessState.COMPLETE, HarnessState.ERROR):
             elapsed_time = time.monotonic() - start_time
@@ -79,6 +101,12 @@ class Harness:
             if self._iterations >= self._max_iterations:
                 logger.warning("Limite de iterações atingido (%d).", self._max_iterations)
                 self._state = HarnessState.ERROR
+                break
+
+            if self._detect_loop():
+                logger.warning("Loop detectado: ações repetidas sem progresso.")
+                self._state = HarnessState.ERROR
+                loop_detected = True
                 break
 
             self._iterations += 1
@@ -102,5 +130,6 @@ class Harness:
             "iterations": self._iterations,
             "success": self._state == HarnessState.COMPLETE,
             "timeout": timeout_reached,
+            "loop_detected": loop_detected,
             "elapsed_time": time.monotonic() - start_time,
         }

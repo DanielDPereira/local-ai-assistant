@@ -106,3 +106,22 @@ class TestHarness:
 
         assert result["success"] is False
         assert result["final_state"] == "ERROR"
+
+    def test_loop_detection(self) -> None:
+        """Testa se ações idênticas repetidas acionam a detecção de loop."""
+        harness = Harness()
+
+        def loop_handler() -> HarnessState:
+            harness.record_action("read_file(test.py)")
+            return HarnessState.OBSERVE
+
+        harness.set_handler(HarnessState.PLAN, lambda: HarnessState.ACT)
+        harness.set_handler(HarnessState.ACT, loop_handler)
+        harness.set_handler(HarnessState.OBSERVE, lambda: HarnessState.ACT)
+
+        result = harness.run()
+
+        assert result["success"] is False
+        assert result["final_state"] == "ERROR"
+        assert result["loop_detected"] is True
+        assert result["iterations"] < 10

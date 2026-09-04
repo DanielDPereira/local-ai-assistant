@@ -209,3 +209,27 @@ async def get_costs_metrics(
         "by_model": aggregator.aggregate_by_model(),
         "by_task_type": aggregator.aggregate_by_task_type(),
     }
+
+
+@router.get("/errors")
+async def get_errors_metrics(
+    limit: int = 50,
+    offset: int = 0,
+    db: DatabaseConnection = Depends(get_db)  # noqa: B008
+) -> dict[str, Any]:
+    """Retorna execuções com erro."""
+    query = "SELECT * FROM executions WHERE status = 'ERROR' OR error_count > 0 ORDER BY started_at DESC LIMIT ? OFFSET ?"
+
+    with db.get_connection() as conn:
+        cursor = conn.execute(query, (limit, offset))
+        rows = [dict(row) for row in cursor.fetchall()]
+
+        count_cursor = conn.execute("SELECT COUNT(*) as count FROM executions WHERE status = 'ERROR' OR error_count > 0")
+        total = count_cursor.fetchone()["count"]
+
+    return {
+        "items": rows,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }

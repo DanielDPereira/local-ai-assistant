@@ -189,3 +189,13 @@ def test_get_costs_metrics(client: TestClient) -> None:
     assert len(data["by_task_type"]) == 1
     assert data["by_task_type"][0]["task_type"] == "coding"
     assert data["by_task_type"][0]["total_cost"] == pytest.approx(0.6)
+
+
+def test_get_errors_metrics(client: TestClient) -> None:
+    """Verifica endpoint de erros."""
+    response = client.get("/api/metrics/errors")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 1
+    assert len(data["items"]) == 1
+    assert data["items"][0]["id"] == "exec2"

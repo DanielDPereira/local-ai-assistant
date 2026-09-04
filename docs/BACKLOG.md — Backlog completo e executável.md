@@ -1283,7 +1283,7 @@ feat: add metrics overview endpoint
 
 ---
 
-## TASK-112 — Executions API
+## [x] TASK-112 — Executions API
 
 **Prioridade:** P1  
 **Dependências:** TASK-110

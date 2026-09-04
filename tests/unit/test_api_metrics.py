@@ -67,3 +67,38 @@ def test_get_overview(client: TestClient) -> None:
     assert data["total_errors"] == 1
     assert data["total_cost"] == pytest.approx(0.6)
     assert data["total_energy_kwh"] == pytest.approx(0.12)
+
+
+def test_list_executions(client: TestClient) -> None:
+    """Verifica listagem de execuções."""
+    # List all
+    response = client.get("/api/metrics/executions")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 2
+    assert len(data["items"]) == 2
+
+    # Filter by status
+    response = client.get("/api/metrics/executions?status=ERROR")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 1
+    assert data["items"][0]["id"] == "exec2"
+
+    # Pagination
+    response = client.get("/api/metrics/executions?limit=1&offset=1")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 1
+
+
+def test_get_execution(client: TestClient) -> None:
+    """Verifica busca de execução única."""
+    response = client.get("/api/metrics/executions/exec1")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id"] == "exec1"
+    assert data["status"] == "DONE"
+
+    response = client.get("/api/metrics/executions/invalid_id")
+    assert response.status_code == 404

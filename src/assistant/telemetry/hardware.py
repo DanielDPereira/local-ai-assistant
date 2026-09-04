@@ -25,6 +25,40 @@ class HardwareSample:
     power_watts: float | None = None
 
 
+@dataclass(frozen=True)
+class HardwareAggregation:
+    """Métricas agregadas de hardware."""
+
+    avg_cpu_percent: float
+    max_cpu_percent: float
+    avg_ram_percent: float
+    max_ram_percent: float
+    avg_gpu_percent: float | None = None
+    max_gpu_percent: float | None = None
+
+
+def aggregate_samples(samples: list[HardwareSample]) -> HardwareAggregation | None:
+    """Agrega uma lista de amostras e retorna as métricas."""
+    if not samples:
+        return None
+
+    cpu = [s.cpu_percent for s in samples]
+    ram = [s.ram_percent for s in samples]
+    gpu = [s.gpu_percent for s in samples if s.gpu_percent is not None]
+
+    avg_gpu = sum(gpu) / len(gpu) if gpu else None
+    max_gpu = max(gpu) if gpu else None
+
+    return HardwareAggregation(
+        avg_cpu_percent=sum(cpu) / len(cpu),
+        max_cpu_percent=max(cpu),
+        avg_ram_percent=sum(ram) / len(ram),
+        max_ram_percent=max(ram),
+        avg_gpu_percent=avg_gpu,
+        max_gpu_percent=max_gpu,
+    )
+
+
 class HardwareSampler:
     """Coletor de métricas de hardware."""
 

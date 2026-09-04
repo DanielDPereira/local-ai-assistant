@@ -1632,7 +1632,7 @@ feat: add error dashboard
 
 ---
 
-## TASK-130 — Git status
+## [x] TASK-130 — Git status
 
 **Prioridade:** P1
 

@@ -1134,7 +1134,7 @@ feat: aggregate execution hardware metrics
 
 ---
 
-## TASK-100 — Configurar preço de energia
+## [x] TASK-100 — Configurar preço de energia
 
 **Prioridade:** P1  
 **Dependências:** TASK-002
@@ -1153,7 +1153,7 @@ feat: add electricity cost configuration
 
 ---
 
-## TASK-101 — Implementar estimativa de energia
+## [x] TASK-101 — Implementar estimativa de energia
 
 **Prioridade:** P1  
 **Dependências:** TASK-092, TASK-100
@@ -1178,7 +1178,7 @@ feat: estimate computational energy usage
 
 ---
 
-## TASK-102 — Implementar custo por execução
+## [x] TASK-102 — Implementar custo por execução
 
 **Prioridade:** P1  
 **Dependências:** TASK-101

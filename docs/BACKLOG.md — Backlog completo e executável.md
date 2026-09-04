@@ -618,7 +618,7 @@ feat: add harness loop detection
 
 ---
 
-## TASK-060 — Executor de validações
+## [x] TASK-060 — Executor de validações
 
 **Prioridade:** P0  
 **Dependências:** TASK-040, TASK-050

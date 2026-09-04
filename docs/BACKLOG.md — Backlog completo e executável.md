@@ -1656,7 +1656,7 @@ feat: add git diff tool
 
 ---
 
-## TASK-132 — Branch management
+## [x] TASK-132 — Branch management
 
 **Prioridade:** P1
 

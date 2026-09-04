@@ -883,7 +883,7 @@ feat: add SQLite database
 
 ---
 
-## TASK-081 — Criar migrations
+## [x] TASK-081 — Criar migrations
 
 **Prioridade:** P1  
 **Dependências:** TASK-080

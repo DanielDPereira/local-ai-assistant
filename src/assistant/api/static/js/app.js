@@ -125,6 +125,8 @@ class DashboardApp {
                 await this.renderOverview();
             } else if (view === 'executions') {
                 await this.renderExecutions();
+            } else if (view === 'analytics') {
+                await this.renderAnalytics();
             } else {
                 this.elements.contentArea.innerHTML = `
                     <div class="dashboard-grid">
@@ -226,6 +228,114 @@ class DashboardApp {
                 </table>
             </div>
         `;
+        
+        this.showContent();
+    }
+    
+    async renderAnalytics() {
+        const response = await fetch('/api/metrics/executions?limit=100');
+        if (!response.ok) throw new Error('Failed to fetch executions data for analytics');
+        
+        const data = await response.json();
+        
+        // Group by day for time series
+        const byDay = {};
+        data.items.forEach(exec => {
+            const date = new Date(exec.started_at).toISOString().split('T')[0];
+            if (!byDay[date]) byDay[date] = { count: 0, cost: 0, duration: 0, success: 0 };
+            byDay[date].count++;
+            byDay[date].cost += exec.estimated_cost;
+            byDay[date].duration += exec.duration_ms;
+            if (exec.status === 'DONE') byDay[date].success++;
+        });
+        
+        const labels = Object.keys(byDay).sort();
+        const counts = labels.map(l => byDay[l].count);
+        const costs = labels.map(l => byDay[l].cost);
+        const avgDurations = labels.map(l => byDay[l].duration / byDay[l].count / 1000); // seconds
+        
+        this.elements.contentArea.innerHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                <div class="card" style="height: 300px;">
+                    <canvas id="execsChart"></canvas>
+                </div>
+                <div class="card" style="height: 300px;">
+                    <canvas id="costsChart"></canvas>
+                </div>
+            </div>
+            <div class="card" style="height: 300px;">
+                <canvas id="durationChart"></canvas>
+            </div>
+        `;
+        
+        // Ensure Chart.js is loaded
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js not loaded');
+            return;
+        }
+        
+        // Common chart options for dark mode
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            color: '#94a3b8',
+            scales: {
+                x: { grid: { color: 'rgba(46, 51, 77, 0.5)' }, ticks: { color: '#94a3b8' } },
+                y: { grid: { color: 'rgba(46, 51, 77, 0.5)' }, ticks: { color: '#94a3b8' } }
+            },
+            plugins: {
+                legend: { labels: { color: '#e2e8f0' } }
+            }
+        };
+
+        new Chart(document.getElementById('execsChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Executions per Day',
+                    data: counts,
+                    backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                    borderColor: 'rgb(99, 102, 241)',
+                    borderWidth: 1
+                }]
+            },
+            options: chartOptions
+        });
+
+        new Chart(document.getElementById('costsChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cost per Day ($)',
+                    data: costs,
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    borderColor: 'rgb(239, 68, 68)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
+
+        new Chart(document.getElementById('durationChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Avg Duration (s)',
+                    data: avgDurations,
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                    borderColor: 'rgb(16, 185, 129)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
         
         this.showContent();
     }

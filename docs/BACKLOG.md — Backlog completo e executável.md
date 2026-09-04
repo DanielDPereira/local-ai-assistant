@@ -1465,7 +1465,7 @@ feat: add dashboard overview
 
 ---
 
-## TASK-122 — Gráficos temporais
+## [x] TASK-122 — Gráficos temporais
 
 **Prioridade:** P1  
 **Dependências:** TASK-121

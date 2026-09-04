@@ -223,7 +223,7 @@ feat: add Ollama model adapter
 
 ---
 
-## TASK-011 — Configurar modelos
+## [x] TASK-011 — Configurar modelos
 
 **Prioridade:** P0  
 **Dependências:** TASK-010

@@ -7,6 +7,8 @@ from collections.abc import Callable
 from enum import Enum, auto
 from typing import Any
 
+from assistant.config.settings import HarnessSettings
+
 logger = logging.getLogger(__name__)
 
 
@@ -24,15 +26,16 @@ class HarnessState(Enum):
 class Harness:
     """Controla o loop de execução garantindo que as regras sejam seguidas."""
 
-    def __init__(self, max_iterations: int = 50) -> None:
+    def __init__(self, settings: HarnessSettings | None = None) -> None:
         """Inicializa o Harness.
 
         Args:
-            max_iterations: Limite máximo de transições de estado para evitar loop infinito.
+            settings: Configurações do Harness. Se omitido, usa padrões.
         """
+        self._settings = settings or HarnessSettings()
         self._state = HarnessState.PLAN
         self._iterations = 0
-        self._max_iterations = max_iterations
+        self._max_iterations = self._settings.max_iterations
         # Handlers mockáveis temporariamente
         self._handlers: dict[HarnessState, Callable[[], HarnessState]] = {
             HarnessState.PLAN: lambda: HarnessState.ACT,

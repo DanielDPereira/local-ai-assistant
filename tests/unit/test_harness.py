@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from assistant.config.settings import HarnessSettings
 from assistant.harness.loop import Harness, HarnessState
 
 
@@ -20,7 +21,8 @@ class TestHarness:
 
     def test_iteration_limit(self) -> None:
         """Testa se o limite de iterações impede loops infinitos."""
-        harness = Harness(max_iterations=3)
+        settings = HarnessSettings(max_iterations=3)
+        harness = Harness(settings=settings)
 
         # Cria um loop infinito ACT -> OBSERVE -> ACT
         harness.set_handler(HarnessState.PLAN, lambda: HarnessState.ACT)

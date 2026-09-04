@@ -1376,7 +1376,7 @@ feat: add computational cost endpoint
 
 ---
 
-## TASK-116 — Errors API
+## [x] TASK-116 — Errors API
 
 **Prioridade:** P1  
 **Dependências:** TASK-084

@@ -6,11 +6,15 @@ from typing import Any
 
 from fastapi import FastAPI
 
+from assistant.api.routers import metrics
+
 app = FastAPI(
     title="Local AI Assistant",
     description="Assistente pessoal de IA executado localmente",
     version="0.1.0",
 )
+
+app.include_router(metrics.router)
 
 
 @app.get("/api/health")

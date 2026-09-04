@@ -1252,7 +1252,7 @@ feat: add FastAPI backend
 
 ---
 
-## TASK-111 — Overview API
+## [x] TASK-111 — Overview API
 
 **Prioridade:** P1  
 **Dependências:** TASK-110, TASK-103

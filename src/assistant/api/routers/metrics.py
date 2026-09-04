@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from assistant.api.dependencies import get_db
 from assistant.db.connection import DatabaseConnection
+from assistant.telemetry.cost_aggregator import CostAggregator
 
 router = APIRouter(prefix="/api/metrics", tags=["metrics"])
 
@@ -193,4 +194,18 @@ async def get_hardware_metrics(
         "total": total,
         "limit": limit,
         "offset": offset,
+    }
+
+
+@router.get("/costs")
+async def get_costs_metrics(
+    db: DatabaseConnection = Depends(get_db)  # noqa: B008
+) -> dict[str, Any]:
+    """Retorna métricas de custo agregadas."""
+    aggregator = CostAggregator(db)
+
+    return {
+        "total": aggregator.get_total_cost(),
+        "by_model": aggregator.aggregate_by_model(),
+        "by_task_type": aggregator.aggregate_by_task_type(),
     }

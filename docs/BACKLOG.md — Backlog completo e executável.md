@@ -1357,7 +1357,7 @@ feat: add hardware metrics endpoint
 
 ---
 
-## TASK-115 — Costs API
+## [x] TASK-115 — Costs API
 
 **Prioridade:** P1  
 **Dependências:** TASK-103

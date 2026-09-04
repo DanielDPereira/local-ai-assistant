@@ -1668,7 +1668,7 @@ feat: add git branch management
 
 ---
 
-## TASK-133 — Semantic commit
+## [x] TASK-133 — Semantic commit
 
 **Prioridade:** P1
 

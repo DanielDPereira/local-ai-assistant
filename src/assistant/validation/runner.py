@@ -7,6 +7,9 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from assistant.telemetry.context import ExecutionContext
+from assistant.telemetry.tracker import TelemetryTracker
+
 
 @dataclass
 class ValidationResult:
@@ -20,13 +23,22 @@ class ValidationResult:
 class ValidationRunner:
     """Executa verificações (ruff, mypy, pytest, build) no workspace."""
 
-    def __init__(self, workspace_path: str) -> None:
+    def __init__(
+        self,
+        workspace_path: str,
+        telemetry_tracker: TelemetryTracker | None = None,
+        execution_context: ExecutionContext | None = None,
+    ) -> None:
         """Inicializa o runner.
 
         Args:
             workspace_path: Diretório onde as validações serão executadas.
+            telemetry_tracker: Opcional rastreador de telemetria.
+            execution_context: Opcional contexto para telemetria.
         """
         self._workspace = Path(workspace_path).resolve()
+        self._tracker = telemetry_tracker
+        self._context = execution_context
 
     def _run_tool(self, tool_name: str, command: str) -> ValidationResult:
         """Executa uma ferramenta específica e retorna o resultado estruturado."""
@@ -51,18 +63,42 @@ class ValidationRunner:
 
             output = "\n".join(output_parts) if output_parts else "(sem saída)"
 
+
+            duration = time.monotonic() - start
+            if self._tracker and self._context:
+                summary = output[:200] + "..." if len(output) > 200 else output
+                self._tracker.track_validation(
+                    self._context,
+                    validation_name=tool_name,
+                    duration=duration,
+                    success=success,
+                    output_summary=summary,
+                )
+
             return ValidationResult(
                 tool=tool_name,
                 success=success,
                 output=output,
-                duration=time.monotonic() - start,
+                duration=duration,
             )
         except Exception as e:
+            duration = time.monotonic() - start
+            error_msg = f"Erro fatal executando {tool_name}: {e}"
+            if self._tracker and self._context:
+                self._tracker.track_validation(
+                    self._context,
+                    validation_name=tool_name,
+                    duration=duration,
+                    success=False,
+                    output_summary="",
+                    error=error_msg,
+                )
+
             return ValidationResult(
                 tool=tool_name,
                 success=False,
-                output=f"Erro fatal executando {tool_name}: {e}",
-                duration=time.monotonic() - start,
+                output=error_msg,
+                duration=duration,
             )
 
     def run_ruff(self) -> ValidationResult:

@@ -162,3 +162,26 @@ class TestTelemetryTracker:
         assert evt.metadata["from_state"] == "PLAN"
         assert evt.metadata["to_state"] == "ACT"
         assert evt.metadata["is_retry"] is False
+
+    def test_track_validation(self) -> None:
+        """Verifica o registro de validações."""
+        tracker = TelemetryTracker()
+        context = ExecutionContext(task_type="coding", model="qwen")
+
+        tracker.track_validation(
+            context,
+            validation_name="Ruff",
+            duration=0.5,
+            success=True,
+            output_summary="All checks passed",
+            error=None
+        )
+
+        events = tracker.get_events()
+        assert len(events) == 1
+        evt = events[0]
+        assert evt.event_type == EventType.TOOL_END
+        assert evt.status == EventStatus.OK
+        assert evt.metadata["validation"] == "Ruff"
+        assert evt.metadata["duration"] == 0.5
+        assert evt.metadata["output_summary"] == "All checks passed"

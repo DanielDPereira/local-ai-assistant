@@ -834,7 +834,7 @@ feat: add harness telemetry
 
 ---
 
-## TASK-076 — Telemetria de validações
+## [x] TASK-076 — Telemetria de validações
 
 **Prioridade:** P1  
 **Dependências:** TASK-060

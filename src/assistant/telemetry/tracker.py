@@ -169,3 +169,25 @@ class TelemetryTracker:
             metadata=meta,
         )
         self.record_event(event)
+
+    def track_validation(self, context: ExecutionContext, validation_name: str, duration: float, success: bool, output_summary: str, error: str | None = None) -> None:
+        """Registra uma validação (Ruff, Mypy, Pytest, Build)."""
+        meta: dict[str, Any] = {
+            "validation": validation_name,
+            "duration": duration,
+            "output_summary": output_summary,
+        }
+
+        status = EventStatus.OK
+        if not success:
+            status = EventStatus.ERROR
+            meta["error"] = error
+
+        event = TelemetryEvent(
+            execution_id=context.execution_id,
+            # Reutilizando TOOL_END já que validações funcionam de maneira similar a ferramentas
+            event_type=EventType.TOOL_END,
+            status=status,
+            metadata=meta,
+        )
+        self.record_event(event)

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from unittest import mock
+
 from assistant.config.settings import HarnessSettings
 from assistant.harness.loop import Harness, HarnessState
 
@@ -34,6 +36,28 @@ class TestHarness:
         assert result["success"] is False
         assert result["final_state"] == "ERROR"
         assert result["iterations"] == 3
+        assert result["timeout"] is False
+
+    @mock.patch("time.monotonic")
+    def test_global_timeout(self, mock_time: mock.MagicMock) -> None:
+        """Testa se o timeout global encerra a execução."""
+        settings = HarnessSettings(timeout_seconds=5)
+        harness = Harness(settings=settings)
+
+        # Cria um loop simulando demoras
+        # time.monotonic é chamado no início, e depois em cada iteração, e por fim no retorno
+        mock_time.side_effect = [0.0, 1.0, 3.0, 6.0, 6.0]  # Passou 6 segundos na 3ª iteração
+
+        harness.set_handler(HarnessState.PLAN, lambda: HarnessState.ACT)
+        harness.set_handler(HarnessState.ACT, lambda: HarnessState.OBSERVE)
+        harness.set_handler(HarnessState.OBSERVE, lambda: HarnessState.ACT)
+
+        result = harness.run()
+
+        assert result["success"] is False
+        assert result["final_state"] == "ERROR"
+        assert result["timeout"] is True
+        assert result["elapsed_time"] == 6.0
 
     def test_fix_loop_execution(self) -> None:
         """Testa se o fluxo consegue voltar para FIX e concluir depois."""

@@ -1050,7 +1050,7 @@ feat: persist validation runs
 
 ---
 
-## TASK-090 — Implementar hardware sampler
+## [x] TASK-090 — Implementar hardware sampler
 
 **Prioridade:** P1  
 **Dependências:** TASK-071

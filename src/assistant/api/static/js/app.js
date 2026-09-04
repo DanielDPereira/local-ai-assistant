@@ -123,6 +123,8 @@ class DashboardApp {
         try {
             if (view === 'overview') {
                 await this.renderOverview();
+            } else if (view === 'executions') {
+                await this.renderExecutions();
             } else {
                 this.elements.contentArea.innerHTML = `
                     <div class="dashboard-grid">
@@ -174,6 +176,54 @@ class DashboardApp {
                     <span class="stat-label">Estimated Cost</span>
                     <span class="stat-value">$${data.total_cost.toFixed(4)}</span>
                 </div>
+            </div>
+        `;
+        
+        this.showContent();
+    }
+    
+    async renderExecutions() {
+        const response = await fetch('/api/metrics/executions?limit=20');
+        if (!response.ok) throw new Error('Failed to fetch executions data');
+        
+        const data = await response.json();
+        
+        let rowsHtml = '';
+        if (data.items.length === 0) {
+            rowsHtml = '<tr><td colspan="6" style="text-align: center;">No executions found</td></tr>';
+        } else {
+            rowsHtml = data.items.map(exec => {
+                const statusClass = exec.status === 'DONE' ? 'success' : (exec.status === 'ERROR' ? 'danger' : 'warning');
+                return `
+                    <tr>
+                        <td style="font-family: monospace;">${exec.id.substring(0, 8)}...</td>
+                        <td>${new Date(exec.started_at).toLocaleString()}</td>
+                        <td>${exec.model}</td>
+                        <td><span class="status-badge ${statusClass}">${exec.status}</span></td>
+                        <td>${(exec.duration_ms / 1000).toFixed(2)}s</td>
+                        <td>$${exec.estimated_cost.toFixed(4)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        this.elements.contentArea.innerHTML = `
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Started At</th>
+                            <th>Model</th>
+                            <th>Status</th>
+                            <th>Duration</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
             </div>
         `;
         

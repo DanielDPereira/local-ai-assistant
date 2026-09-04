@@ -275,3 +275,55 @@ body {
     font-weight: 700;
     color: var(--text-main);
 }
+
+/* Data Tables */
+.table-container {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: rgba(15, 17, 26, 0.4);
+    padding: 16px 24px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tr:hover td {
+    background-color: var(--bg-hover);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.success { background-color: rgba(16, 185, 129, 0.1); color: var(--success); }
+.status-badge.danger { background-color: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.status-badge.warning { background-color: rgba(245, 158, 11, 0.1); color: var(--warning); }
+.status-badge.neutral { background-color: rgba(148, 163, 184, 0.1); color: var(--text-muted); }

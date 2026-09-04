@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from assistant.api.dependencies import get_db
 from assistant.db.connection import DatabaseConnection
@@ -61,3 +61,59 @@ async def get_overview(db: DatabaseConnection = Depends(get_db)) -> dict[str, An
         "total_cost": row["total_cost"] or 0.0,
         "total_energy_kwh": row["total_energy_kwh"] or 0.0,
     }
+
+
+@router.get("/executions")
+async def list_executions(
+    status: str | None = None,
+    limit: int = 50,
+    offset: int = 0,
+    db: DatabaseConnection = Depends(get_db)  # noqa: B008
+) -> dict[str, Any]:
+    """Lista execuções com paginação e filtros."""
+    query = "SELECT * FROM executions"
+    params: list[Any] = []
+
+    if status:
+        query += " WHERE status = ?"
+        params.append(status)
+
+    query += " ORDER BY started_at DESC LIMIT ? OFFSET ?"
+    params.extend([limit, offset])
+
+    with db.get_connection() as conn:
+        cursor = conn.execute(query, params)
+        rows = [dict(row) for row in cursor.fetchall()]
+
+        # Count total
+        count_query = "SELECT COUNT(*) as count FROM executions"
+        count_params: list[Any] = []
+        if status:
+            count_query += " WHERE status = ?"
+            count_params.append(status)
+
+        count_cursor = conn.execute(count_query, count_params)
+        total = count_cursor.fetchone()["count"]
+
+    return {
+        "items": rows,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }
+
+
+@router.get("/executions/{execution_id}")
+async def get_execution(
+    execution_id: str,
+    db: DatabaseConnection = Depends(get_db)  # noqa: B008
+) -> dict[str, Any]:
+    """Retorna detalhes de uma execução."""
+    with db.get_connection() as conn:
+        cursor = conn.execute("SELECT * FROM executions WHERE id = ?", (execution_id,))
+        row = cursor.fetchone()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Execution not found")
+
+    return dict(row)

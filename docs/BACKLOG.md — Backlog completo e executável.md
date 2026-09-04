@@ -593,7 +593,7 @@ feat: add harness execution timeout
 
 ---
 
-## TASK-053 — Detecção de loop
+## [x] TASK-053 — Detecção de loop
 
 **Prioridade:** P1  
 **Dependências:** TASK-051

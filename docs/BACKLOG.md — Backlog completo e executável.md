@@ -762,7 +762,7 @@ feat: track execution lifecycle
 
 ---
 
-## TASK-073 — Telemetria de modelos
+## [x] TASK-073 — Telemetria de modelos
 
 **Prioridade:** P0  
 **Dependências:** TASK-072, TASK-010

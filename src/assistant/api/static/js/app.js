@@ -127,6 +127,8 @@ class DashboardApp {
                 await this.renderExecutions();
             } else if (view === 'analytics') {
                 await this.renderAnalytics();
+            } else if (view === 'models') {
+                await this.renderModels();
             } else {
                 this.elements.contentArea.innerHTML = `
                     <div class="dashboard-grid">
@@ -336,6 +338,56 @@ class DashboardApp {
             },
             options: chartOptions
         });
+        
+        this.showContent();
+    }
+    
+    async renderModels() {
+        const response = await fetch('/api/metrics/models');
+        if (!response.ok) throw new Error('Failed to fetch models data');
+        
+        const data = await response.json();
+        
+        let rowsHtml = '';
+        if (data.items.length === 0) {
+            rowsHtml = '<tr><td colspan="7" style="text-align: center;">No models data found</td></tr>';
+        } else {
+            rowsHtml = data.items.map(m => {
+                const successRate = m.total_executions > 0 ? (m.successful_executions / m.total_executions * 100).toFixed(1) : 0;
+                return `
+                    <tr>
+                        <td style="font-weight: 600;">${m.model}</td>
+                        <td>${m.total_executions}</td>
+                        <td>${successRate}%</td>
+                        <td>${(m.avg_duration_ms / 1000).toFixed(2)}s</td>
+                        <td>${m.total_tokens.toLocaleString()}</td>
+                        <td>$${m.total_cost.toFixed(4)}</td>
+                        <td>${new Date(m.last_used).toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        this.elements.contentArea.innerHTML = `
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Executions</th>
+                            <th>Success Rate</th>
+                            <th>Avg Duration</th>
+                            <th>Total Tokens</th>
+                            <th>Total Cost</th>
+                            <th>Last Used</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        `;
         
         this.showContent();
     }

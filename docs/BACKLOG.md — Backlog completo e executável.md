@@ -1486,7 +1486,7 @@ feat: add dashboard time series
 
 ---
 
-## TASK-123 — Dashboard de modelos
+## [x] TASK-123 — Dashboard de modelos
 
 **Prioridade:** P1  
 **Dependências:** TASK-113

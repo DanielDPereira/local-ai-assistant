@@ -340,7 +340,7 @@ feat: add tool abstraction
 
 ---
 
-## TASK-030 — Implementar leitura de arquivos
+## [x] TASK-030 — Implementar leitura de arquivos
 
 **Prioridade:** P0  
 **Dependências:** TASK-021

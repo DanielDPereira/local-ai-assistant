@@ -133,6 +133,10 @@ class DashboardApp {
                 await this.renderHardware();
             } else if (view === 'costs') {
                 await this.renderCosts();
+            } else if (view === 'harness') {
+                await this.renderHarness();
+            } else if (view === 'errors') {
+                await this.renderErrors();
             } else {
                 this.elements.contentArea.innerHTML = `
                     <div class="dashboard-grid">
@@ -572,6 +576,95 @@ class DashboardApp {
                         </table>
                     </div>
                 </div>
+            </div>
+        `;
+        
+        this.showContent();
+    }
+    
+    async renderHarness() {
+        const response = await fetch('/api/metrics/harness');
+        if (!response.ok) throw new Error('Failed to fetch harness data');
+        
+        const data = await response.json();
+        
+        let rowsHtml = '';
+        if (data.items.length === 0) {
+            rowsHtml = '<tr><td colspan="6" style="text-align: center;">No harness data found</td></tr>';
+        } else {
+            rowsHtml = data.items.map(h => {
+                const statusClass = h.status === 'DONE' ? 'success' : 'warning';
+                return `
+                    <tr>
+                        <td style="font-family: monospace;">${h.id.substring(0, 8)}...</td>
+                        <td>${h.iteration_number}</td>
+                        <td><span class="status-badge ${statusClass}">${h.status}</span></td>
+                        <td>${h.retry ? 'Yes' : 'No'}</td>
+                        <td>${h.duration_ms ? (h.duration_ms / 1000).toFixed(2) + 's' : '-'}</td>
+                        <td style="color:var(--danger)">${h.error || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        this.elements.contentArea.innerHTML = `
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Iteration</th>
+                            <th>Status</th>
+                            <th>Retry</th>
+                            <th>Duration</th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        this.showContent();
+    }
+    
+    async renderErrors() {
+        const response = await fetch('/api/metrics/errors');
+        if (!response.ok) throw new Error('Failed to fetch errors data');
+        
+        const data = await response.json();
+        
+        let rowsHtml = '';
+        if (data.items.length === 0) {
+            rowsHtml = '<tr><td colspan="4" style="text-align: center;">No errors found</td></tr>';
+        } else {
+            rowsHtml = data.items.map(e => `
+                <tr>
+                    <td style="font-family: monospace;">${e.id.substring(0, 8)}...</td>
+                    <td>${new Date(e.started_at).toLocaleString()}</td>
+                    <td>${e.model}</td>
+                    <td style="color:var(--danger); font-weight: 500;">${e.error_count} errors</td>
+                </tr>
+            `).join('');
+        }
+        
+        this.elements.contentArea.innerHTML = `
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Execution ID</th>
+                            <th>Started At</th>
+                            <th>Model</th>
+                            <th>Error Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
             </div>
         `;
         

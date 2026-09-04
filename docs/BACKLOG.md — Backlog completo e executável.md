@@ -1543,7 +1543,7 @@ feat: add cost dashboard
 
 ---
 
-## TASK-126 — Lista de execuções
+## [x] TASK-126 — Lista de execuções
 
 **Prioridade:** P1  
 **Dependências:** TASK-112
@@ -1566,7 +1566,7 @@ feat: add executions dashboard
 
 ---
 
-## TASK-127 — Detalhes da execução
+## [x] TASK-127 — Detalhes da execução
 
 **Prioridade:** P1  
 **Dependências:** TASK-126
@@ -1591,7 +1591,7 @@ feat: add execution detail dashboard
 
 ---
 
-## TASK-128 — Dashboard do Harness
+## [x] TASK-128 — Dashboard do Harness
 
 **Prioridade:** P2  
 **Dependências:** TASK-117
@@ -1613,7 +1613,7 @@ feat: add harness dashboard
 
 ---
 
-## TASK-129 — Dashboard de erros
+## [x] TASK-129 — Dashboard de erros
 
 **Prioridade:** P2  
 **Dependências:** TASK-116

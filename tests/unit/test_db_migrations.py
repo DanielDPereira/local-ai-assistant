@@ -79,9 +79,12 @@ class TestMigrationRunner:
             cursor = conn.execute("SELECT count(*) as c FROM schema_migrations")
             assert cursor.fetchone()["c"] == count
 
-            # Garante que a tabela executions existe
+            # Garante que a tabela executions existe e tem a nova coluna
             cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='executions'")
             assert cursor.fetchone() is not None
+            cursor = conn.execute("PRAGMA table_info(executions)")
+            columns = [row["name"] for row in cursor.fetchall()]
+            assert "estimated_cost" in columns
 
             # Garante que a tabela model_runs existe
             cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='model_runs'")

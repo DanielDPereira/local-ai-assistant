@@ -1200,7 +1200,7 @@ feat: calculate execution computational cost
 
 ---
 
-## TASK-103 — Agregar custos
+## [x] TASK-103 — Agregar custos
 
 **Prioridade:** P1  
 **Dependências:** TASK-102

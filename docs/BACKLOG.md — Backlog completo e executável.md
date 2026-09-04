@@ -1522,7 +1522,7 @@ feat: add hardware dashboard
 
 ---
 
-## TASK-125 — Dashboard de custos
+## [x] TASK-125 — Dashboard de custos
 
 **Prioridade:** P1  
 **Dependências:** TASK-115

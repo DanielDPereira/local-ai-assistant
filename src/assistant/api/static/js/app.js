@@ -131,6 +131,8 @@ class DashboardApp {
                 await this.renderModels();
             } else if (view === 'hardware') {
                 await this.renderHardware();
+            } else if (view === 'costs') {
+                await this.renderCosts();
             } else {
                 this.elements.contentArea.innerHTML = `
                     <div class="dashboard-grid">
@@ -502,6 +504,76 @@ class DashboardApp {
                 }
             }
         });
+        
+        this.showContent();
+    }
+    
+    async renderCosts() {
+        const response = await fetch('/api/metrics/costs');
+        if (!response.ok) throw new Error('Failed to fetch costs data');
+        
+        const data = await response.json();
+        
+        let modelsRows = data.by_model.length === 0 
+            ? '<tr><td colspan="2" style="text-align:center;">No data</td></tr>' 
+            : data.by_model.map(m => `
+                <tr>
+                    <td>${m.model}</td>
+                    <td style="font-weight:600; color:var(--text-main);">$${m.total_cost.toFixed(4)}</td>
+                </tr>
+            `).join('');
+            
+        let taskRows = data.by_task_type.length === 0 
+            ? '<tr><td colspan="2" style="text-align:center;">No data</td></tr>' 
+            : data.by_task_type.map(t => `
+                <tr>
+                    <td>${t.task_type}</td>
+                    <td style="font-weight:600; color:var(--text-main);">$${t.total_cost.toFixed(4)}</td>
+                </tr>
+            `).join('');
+            
+        this.elements.contentArea.innerHTML = `
+            <div class="dashboard-grid" style="margin-bottom: 24px;">
+                <div class="stat-card warning">
+                    <span class="stat-label">Total Cost</span>
+                    <span class="stat-value">$${data.total.total_cost.toFixed(4)}</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Energy</span>
+                    <span class="stat-value">${data.total.total_energy_kwh.toFixed(4)} kWh</span>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">Cost by Model</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Model</th><th>Cost</th></tr>
+                            </thead>
+                            <tbody>
+                                ${modelsRows}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">Cost by Task Type</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Task Type</th><th>Cost</th></tr>
+                            </thead>
+                            <tbody>
+                                ${taskRows}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
         
         this.showContent();
     }

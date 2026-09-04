@@ -965,7 +965,7 @@ feat: persist model runs
 
 ---
 
-## TASK-084 — Criar tabela tool_runs
+## [x] TASK-084 — Criar tabela tool_runs
 
 **Prioridade:** P0  
 **Dependências:** TASK-082

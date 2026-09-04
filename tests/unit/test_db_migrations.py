@@ -86,3 +86,7 @@ class TestMigrationRunner:
             # Garante que a tabela model_runs existe
             cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='model_runs'")
             assert cursor.fetchone() is not None
+
+            # Garante que a tabela tool_runs existe
+            cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='tool_runs'")
+            assert cursor.fetchone() is not None

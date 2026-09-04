@@ -431,7 +431,7 @@ feat: add filesystem listing tool
 
 ---
 
-## TASK-040 — Implementar execução de comandos
+## [x] TASK-040 — Implementar execução de comandos
 
 **Prioridade:** P0  
 **Dependências:** TASK-021

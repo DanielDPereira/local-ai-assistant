@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import time
+
+from assistant.models.ollama_client import OllamaResponse
 from assistant.telemetry.context import ExecutionContext
 from assistant.telemetry.event import EventStatus, EventType, TelemetryEvent
 from assistant.telemetry.tracker import TelemetryTracker
@@ -65,3 +68,41 @@ class TestTelemetryTracker:
         assert end_evt.status == EventStatus.ERROR
         assert end_evt.metadata["error"] == "timeout"
         assert end_evt.metadata["final_status"] == "failed"
+
+    def test_track_model(self) -> None:
+        """Verifica o registro de request e response de modelo."""
+        tracker = TelemetryTracker()
+        context = ExecutionContext(task_type="coding", model="qwen")
+        start = time.monotonic()
+
+        # Request
+        tracker.track_model_request(context, model="qwen", start_time=start)
+
+        events = tracker.get_events()
+        assert len(events) == 1
+        req_evt = events[0]
+        assert req_evt.event_type == EventType.MODEL_REQUEST
+        assert req_evt.metadata["model"] == "qwen"
+
+        # Response (Sucesso)
+        response = OllamaResponse(
+            content="ok", model="qwen", done=True, eval_count=100, tokens_per_second=25.0
+        )
+        tracker.track_model_response(context, model="qwen", start_time=start, response=response)
+
+        events = tracker.get_events()
+        assert len(events) == 2
+        res_evt = events[1]
+        assert res_evt.event_type == EventType.MODEL_RESPONSE
+        assert res_evt.status == EventStatus.OK
+        assert res_evt.metadata["tokens"] == 100
+        assert res_evt.metadata["tokens_per_second"] == 25.0
+        assert res_evt.metadata["duration"] >= 0
+
+        # Response (Erro)
+        tracker.track_model_response(context, model="qwen", start_time=start, response=None, error="Timeout")
+        events = tracker.get_events()
+        err_evt = events[2]
+        assert err_evt.event_type == EventType.MODEL_RESPONSE
+        assert err_evt.status == EventStatus.ERROR
+        assert err_evt.metadata["error"] == "Timeout"

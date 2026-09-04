@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any
 
+from assistant.models.ollama_client import OllamaResponse
 from assistant.telemetry.context import ExecutionContext, ExecutionStatus
 from assistant.telemetry.event import EventStatus, EventType, TelemetryEvent
 
@@ -58,6 +60,46 @@ class TelemetryTracker:
             execution_id=context.execution_id,
             event_type=event_type,
             status=event_status,
+            metadata=meta,
+        )
+        self.record_event(event)
+
+    def track_model_request(self, context: ExecutionContext, model: str, start_time: float) -> None:
+        """Registra o início de uma requisição ao modelo."""
+        meta = {
+            "model": model,
+            "request_start": start_time,
+        }
+        event = TelemetryEvent(
+            execution_id=context.execution_id,
+            event_type=EventType.MODEL_REQUEST,
+            status=EventStatus.OK,
+            metadata=meta,
+        )
+        self.record_event(event)
+
+    def track_model_response(self, context: ExecutionContext, model: str, start_time: float, response: OllamaResponse | None, error: str | None = None) -> None:
+        """Registra a resposta do modelo."""
+        end_time = time.monotonic()
+        duration = end_time - start_time
+
+        meta: dict[str, Any] = {
+            "model": model,
+            "duration": duration,
+        }
+
+        if response:
+            meta["tokens"] = response.eval_count
+            meta["tokens_per_second"] = response.tokens_per_second
+            status = EventStatus.OK
+        else:
+            meta["error"] = error
+            status = EventStatus.ERROR
+
+        event = TelemetryEvent(
+            execution_id=context.execution_id,
+            event_type=EventType.MODEL_RESPONSE,
+            status=status,
             metadata=meta,
         )
         self.record_event(event)

@@ -216,3 +216,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Assistente de IA Local ---
+
+# Banco de dados local
+data/
+*.db
+*.db-journal
+
+# Logs de execução
+logs/

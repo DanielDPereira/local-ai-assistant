@@ -510,7 +510,7 @@ feat: add terminal command policy
 
 ---
 
-## TASK-050 — Implementar ciclo básico
+## [x] TASK-050 — Implementar ciclo básico
 
 **Prioridade:** P0  
 **Dependências:** TASK-020, TASK-021, TASK-030, TASK-040

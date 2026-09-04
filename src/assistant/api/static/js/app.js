@@ -129,6 +129,8 @@ class DashboardApp {
                 await this.renderAnalytics();
             } else if (view === 'models') {
                 await this.renderModels();
+            } else if (view === 'hardware') {
+                await this.renderHardware();
             } else {
                 this.elements.contentArea.innerHTML = `
                     <div class="dashboard-grid">
@@ -388,6 +390,118 @@ class DashboardApp {
                 </table>
             </div>
         `;
+        
+        this.showContent();
+    }
+    
+    async renderHardware() {
+        const response = await fetch('/api/metrics/hardware?limit=100');
+        if (!response.ok) throw new Error('Failed to fetch hardware data');
+        
+        const data = await response.json();
+        
+        if (data.items.length === 0) {
+            this.elements.contentArea.innerHTML = '<div class="card"><p style="text-align:center;">No hardware data available.</p></div>';
+            this.showContent();
+            return;
+        }
+        
+        let totalCpu = 0;
+        let totalRam = 0;
+        let maxCpu = 0;
+        let maxRam = 0;
+        
+        // Reverse for chronological order in charts
+        const items = [...data.items].reverse();
+        
+        const labels = [];
+        const cpuData = [];
+        const ramData = [];
+        
+        items.forEach(item => {
+            totalCpu += item.cpu_percent;
+            totalRam += item.ram_percent;
+            if (item.cpu_percent > maxCpu) maxCpu = item.cpu_percent;
+            if (item.ram_percent > maxRam) maxRam = item.ram_percent;
+            
+            labels.push(new Date(item.timestamp).toLocaleTimeString());
+            cpuData.push(item.cpu_percent);
+            ramData.push(item.ram_percent);
+        });
+        
+        const avgCpu = totalCpu / items.length;
+        const avgRam = totalRam / items.length;
+        
+        this.elements.contentArea.innerHTML = `
+            <div class="dashboard-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <span class="stat-label">Avg CPU Usage</span>
+                    <span class="stat-value">${avgCpu.toFixed(1)}%</span>
+                </div>
+                <div class="stat-card warning">
+                    <span class="stat-label">Peak CPU Usage</span>
+                    <span class="stat-value">${maxCpu.toFixed(1)}%</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Avg RAM Usage</span>
+                    <span class="stat-value">${avgRam.toFixed(1)}%</span>
+                </div>
+                <div class="stat-card warning">
+                    <span class="stat-label">Peak RAM Usage</span>
+                    <span class="stat-value">${maxRam.toFixed(1)}%</span>
+                </div>
+            </div>
+            <div class="card" style="height: 400px;">
+                <canvas id="hardwareChart"></canvas>
+            </div>
+        `;
+        
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js not loaded');
+            return;
+        }
+        
+        new Chart(document.getElementById('hardwareChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'CPU Usage (%)',
+                        data: cpuData,
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        borderColor: 'rgb(99, 102, 241)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'RAM Usage (%)',
+                        data: ramData,
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        borderColor: 'rgb(16, 185, 129)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                color: '#94a3b8',
+                scales: {
+                    x: { grid: { color: 'rgba(46, 51, 77, 0.5)' }, ticks: { color: '#94a3b8' } },
+                    y: { 
+                        grid: { color: 'rgba(46, 51, 77, 0.5)' }, 
+                        ticks: { color: '#94a3b8' },
+                        min: 0,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#e2e8f0' } }
+                }
+            }
+        });
         
         this.showContent();
     }

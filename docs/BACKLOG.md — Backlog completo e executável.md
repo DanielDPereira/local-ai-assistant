@@ -1501,7 +1501,7 @@ feat: add model performance dashboard
 
 ---
 
-## TASK-124 — Dashboard de hardware
+## [x] TASK-124 — Dashboard de hardware
 
 **Prioridade:** P1  
 **Dependências:** TASK-114

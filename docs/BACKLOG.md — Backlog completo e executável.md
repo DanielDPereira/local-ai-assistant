@@ -900,7 +900,7 @@ feat: add database migrations
 
 ---
 
-## TASK-082 — Criar tabela executions
+## [x] TASK-082 — Criar tabela executions
 
 **Prioridade:** P0  
 **Dependências:** TASK-080

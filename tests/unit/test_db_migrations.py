@@ -63,3 +63,22 @@ class TestMigrationRunner:
         with db.get_connection() as conn:
             cursor = conn.execute("SELECT count(*) as c FROM schema_migrations")
             assert cursor.fetchone()["c"] == 0
+
+    def test_real_migrations(self, tmp_path: Path) -> None:
+        """Verifica se as migrações reais do projeto rodam com sucesso num banco vazio."""
+        db_file = tmp_path / "real.db"
+        db = DatabaseConnection(db_path=str(db_file))
+        # runner sem passar diretório usará as migrações reais do código-fonte
+        runner = MigrationRunner(db=db)
+
+        count = runner.run_migrations()
+        assert count >= 1  # Temos pelo menos 1 migração real
+
+        # Confirma que a tabela schema_migrations registrou
+        with db.get_connection() as conn:
+            cursor = conn.execute("SELECT count(*) as c FROM schema_migrations")
+            assert cursor.fetchone()["c"] == count
+
+            # Garante que a tabela executions existe
+            cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='executions'")
+            assert cursor.fetchone() is not None

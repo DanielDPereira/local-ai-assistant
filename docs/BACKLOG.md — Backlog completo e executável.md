@@ -1395,7 +1395,7 @@ feat: add error metrics endpoint
 
 ---
 
-## TASK-117 — Harness API
+## [x] TASK-117 — Harness API
 
 **Prioridade:** P2  
 **Dependências:** TASK-085

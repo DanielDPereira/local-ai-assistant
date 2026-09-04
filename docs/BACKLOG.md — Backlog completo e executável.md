@@ -1309,7 +1309,7 @@ feat: add executions metrics API
 
 ---
 
-## TASK-113 — Models API
+## [x] TASK-113 — Models API
 
 **Prioridade:** P1  
 **Dependências:** TASK-083

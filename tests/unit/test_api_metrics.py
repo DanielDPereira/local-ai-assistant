@@ -24,6 +24,7 @@ def memory_db(tmp_path: Path) -> DatabaseConnection:
     runner.run_migrations()
 
     with db.get_connection() as conn:
+        # Executions
         conn.execute(
             """INSERT INTO executions
                (id, started_at, task_type, status, model, success, duration_ms, total_tokens, tool_calls, error_count, estimated_cost, estimated_energy_kwh)
@@ -35,6 +36,19 @@ def memory_db(tmp_path: Path) -> DatabaseConnection:
                (id, started_at, task_type, status, model, success, duration_ms, total_tokens, tool_calls, error_count, estimated_cost, estimated_energy_kwh)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             ("exec2", "2026-09-04 11:00:00", "coding", "ERROR", "qwen3:4b", 0, 500, 10, 0, 1, 0.1, 0.02)
+        )
+        # Model runs
+        conn.execute(
+            """INSERT INTO model_runs
+               (id, execution_id, model, started_at, duration_ms, success, total_tokens, tokens_per_second)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            ("mr1", "exec1", "qwen3:4b", "2026-09-04 10:00:01", 500, 1, 50, 100.0)
+        )
+        conn.execute(
+            """INSERT INTO model_runs
+               (id, execution_id, model, started_at, duration_ms, success, total_tokens, tokens_per_second)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            ("mr2", "exec2", "qwen3:4b", "2026-09-04 11:00:01", 200, 0, 10, 50.0)
         )
 
     return db
@@ -102,3 +116,21 @@ def test_get_execution(client: TestClient) -> None:
 
     response = client.get("/api/metrics/executions/invalid_id")
     assert response.status_code == 404
+
+
+def test_get_models_metrics(client: TestClient) -> None:
+    """Verifica agregação de métricas por modelo."""
+    response = client.get("/api/metrics/models")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 1
+    model_data = data["items"][0]
+
+    assert model_data["model"] == "qwen3:4b"
+    assert model_data["total_runs"] == 2
+    assert model_data["successful_runs"] == 1
+    assert model_data["failed_runs"] == 1
+    assert model_data["success_rate"] == 50.0
+    assert model_data["avg_duration_ms"] == 350.0
+    assert model_data["avg_tokens_per_second"] == 75.0
+    assert model_data["total_tokens"] == 60

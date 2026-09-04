@@ -859,7 +859,7 @@ feat: add validation telemetry
 
 ---
 
-## TASK-080 — Configurar SQLite
+## [x] TASK-080 — Configurar SQLite
 
 **Prioridade:** P0  
 **Dependências:** TASK-070

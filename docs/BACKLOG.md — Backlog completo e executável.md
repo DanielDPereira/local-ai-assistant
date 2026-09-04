@@ -1418,7 +1418,7 @@ feat: add harness metrics endpoint
 
 ---
 
-## TASK-120 — Criar dashboard base
+## [x] TASK-120 — Criar dashboard base
 
 **Prioridade:** P1  
 **Dependências:** TASK-110

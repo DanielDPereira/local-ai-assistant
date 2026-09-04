@@ -1338,7 +1338,7 @@ feat: add model metrics endpoint
 
 ---
 
-## TASK-114 — Hardware API
+## [x] TASK-114 — Hardware API
 
 **Prioridade:** P1  
 **Dependências:** TASK-092

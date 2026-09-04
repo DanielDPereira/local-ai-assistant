@@ -154,3 +154,43 @@ async def get_models_metrics(
         row["failed_runs"] = row["failed_runs"] or 0
 
     return {"items": rows}
+
+
+@router.get("/hardware")
+async def get_hardware_metrics(
+    execution_id: str | None = None,
+    limit: int = 50,
+    offset: int = 0,
+    db: DatabaseConnection = Depends(get_db)  # noqa: B008
+) -> dict[str, Any]:
+    """Retorna amostras de hardware."""
+    query = "SELECT * FROM hardware_samples"
+    params: list[Any] = []
+
+    if execution_id:
+        query += " WHERE execution_id = ?"
+        params.append(execution_id)
+
+    query += " ORDER BY timestamp DESC LIMIT ? OFFSET ?"
+    params.extend([limit, offset])
+
+    with db.get_connection() as conn:
+        cursor = conn.execute(query, params)
+        rows = [dict(row) for row in cursor.fetchall()]
+
+        # Count total
+        count_query = "SELECT COUNT(*) as count FROM hardware_samples"
+        count_params: list[Any] = []
+        if execution_id:
+            count_query += " WHERE execution_id = ?"
+            count_params.append(execution_id)
+
+        count_cursor = conn.execute(count_query, count_params)
+        total = count_cursor.fetchone()["count"]
+
+    return {
+        "items": rows,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }

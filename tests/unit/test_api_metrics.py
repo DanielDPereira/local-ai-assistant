@@ -50,6 +50,19 @@ def memory_db(tmp_path: Path) -> DatabaseConnection:
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             ("mr2", "exec2", "qwen3:4b", "2026-09-04 11:00:01", 200, 0, 10, 50.0)
         )
+        # Hardware samples
+        conn.execute(
+            """INSERT INTO hardware_samples
+               (id, execution_id, timestamp, cpu_percent, ram_percent, ram_used_mb)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            ("hw1", "exec1", "2026-09-04 10:00:00.500", 10.0, 50.0, 1024.0)
+        )
+        conn.execute(
+            """INSERT INTO hardware_samples
+               (id, execution_id, timestamp, cpu_percent, ram_percent, ram_used_mb)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            ("hw2", "exec1", "2026-09-04 10:00:01.000", 20.0, 51.0, 1050.0)
+        )
 
     return db
 
@@ -134,3 +147,23 @@ def test_get_models_metrics(client: TestClient) -> None:
     assert model_data["avg_duration_ms"] == 350.0
     assert model_data["avg_tokens_per_second"] == 75.0
     assert model_data["total_tokens"] == 60
+
+
+def test_get_hardware_metrics(client: TestClient) -> None:
+    """Verifica endpoint de métricas de hardware."""
+    response = client.get("/api/metrics/hardware")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 2
+    assert len(data["items"]) == 2
+
+    # Filter by execution
+    response = client.get("/api/metrics/hardware?execution_id=exec1")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 2
+
+    response = client.get("/api/metrics/hardware?execution_id=exec2")
+    assert response.status_code == 200
+    data2 = response.json()
+    assert data2["total"] == 0

@@ -2,16 +2,28 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 from assistant.tools.base import BaseTool, ToolResult
 
 
 class ExecuteCommandTool(BaseTool):
     """Executa comandos no workspace com timeout."""
+
+    # Padrões de comandos perigosos a serem bloqueados (Linux e Windows)
+    BLOCKED_PATTERNS: ClassVar[list[re.Pattern[str]]] = [
+        re.compile(r"^\s*(sudo|su)\b", re.IGNORECASE),
+        re.compile(r"\brm\s+-r", re.IGNORECASE),
+        re.compile(r"\brmdir\s+/s", re.IGNORECASE),
+        re.compile(r"\bformat\b", re.IGNORECASE),
+        re.compile(r"\bmkfs\b", re.IGNORECASE),
+        re.compile(r"\bdd\b", re.IGNORECASE),
+        re.compile(r">\s*/dev/(sd[a-z]|nvme)", re.IGNORECASE),
+    ]
 
     def __init__(self, workspace_path: str, default_timeout: int = 30) -> None:
         """Inicializa a ferramenta.
@@ -59,6 +71,14 @@ class ExecuteCommandTool(BaseTool):
                 success=False,
                 output="O argumento 'command' é obrigatório.",
                 error_code="MISSING_ARGUMENT",
+            )
+
+        # Validação de política de comandos
+        if self._is_command_blocked(command):
+            return ToolResult(
+                success=False,
+                output=f"Comando bloqueado por política de segurança: {command}",
+                error_code="POLICY_VIOLATION",
             )
 
         timeout = kwargs.get("timeout", self._default_timeout)
@@ -127,3 +147,8 @@ class ExecuteCommandTool(BaseTool):
                 output=f"Erro ao executar o comando: {e}",
                 error_code="UNKNOWN_ERROR",
             )
+
+    def _is_command_blocked(self, command: str) -> bool:
+        """Verifica se o comando viola alguma política de segurança."""
+        cmd_lower = command.strip()
+        return any(pattern.search(cmd_lower) for pattern in self.BLOCKED_PATTERNS)

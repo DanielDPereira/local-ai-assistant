@@ -541,7 +541,7 @@ feat: implement basic harness
 
 ---
 
-## TASK-051 — Limite de iterações
+## [x] TASK-051 — Limite de iterações
 
 **Prioridade:** P0  
 **Dependências:** TASK-050

@@ -302,7 +302,7 @@ feat: implement basic agent
 
 ---
 
-## TASK-021 — Criar abstração de ferramentas
+## [x] TASK-021 — Criar abstração de ferramentas
 
 **Prioridade:** P0  
 **Dependências:** TASK-020

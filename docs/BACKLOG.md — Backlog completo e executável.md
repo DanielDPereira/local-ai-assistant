@@ -260,7 +260,7 @@ feat: add configurable model selection
 
 ---
 
-## TASK-020 — Implementar Agent mínimo
+## [x] TASK-020 — Implementar Agent mínimo
 
 **Prioridade:** P0  
 **Dependências:** TASK-011

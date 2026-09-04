@@ -178,7 +178,7 @@ feat: add application configuration
 
 ---
 
-## TASK-010 — Implementar adapter Ollama
+## [x] TASK-010 — Implementar adapter Ollama
 
 **Prioridade:** P0  
 **Dependências:** TASK-002

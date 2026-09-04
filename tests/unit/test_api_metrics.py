@@ -167,3 +167,25 @@ def test_get_hardware_metrics(client: TestClient) -> None:
     assert response.status_code == 200
     data2 = response.json()
     assert data2["total"] == 0
+
+
+def test_get_costs_metrics(client: TestClient) -> None:
+    """Verifica endpoint de custos."""
+    response = client.get("/api/metrics/costs")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert "total" in data
+    assert "by_model" in data
+    assert "by_task_type" in data
+
+    assert data["total"]["total_cost"] == pytest.approx(0.6)
+    assert data["total"]["total_energy_kwh"] == pytest.approx(0.12)
+
+    assert len(data["by_model"]) == 1
+    assert data["by_model"][0]["model"] == "qwen3:4b"
+    assert data["by_model"][0]["total_cost"] == pytest.approx(0.6)
+
+    assert len(data["by_task_type"]) == 1
+    assert data["by_task_type"][0]["task_type"] == "coding"
+    assert data["by_task_type"][0]["total_cost"] == pytest.approx(0.6)

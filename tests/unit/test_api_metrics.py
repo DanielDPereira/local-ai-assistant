@@ -63,6 +63,13 @@ def memory_db(tmp_path: Path) -> DatabaseConnection:
                VALUES (?, ?, ?, ?, ?, ?)""",
             ("hw2", "exec1", "2026-09-04 10:00:01.000", 20.0, 51.0, 1050.0)
         )
+        # Harness iterations
+        conn.execute(
+            """INSERT INTO harness_iterations
+               (id, execution_id, iteration_number, started_at, duration_ms, status, retry)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            ("hi1", "exec1", 1, "2026-09-04 10:00:05", 200, "DONE", 0)
+        )
 
     return db
 
@@ -199,3 +206,13 @@ def test_get_errors_metrics(client: TestClient) -> None:
     assert data["total"] == 1
     assert len(data["items"]) == 1
     assert data["items"][0]["id"] == "exec2"
+
+
+def test_get_harness_metrics(client: TestClient) -> None:
+    """Verifica endpoint do harness."""
+    response = client.get("/api/metrics/harness")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 1
+    assert len(data["items"]) == 1
+    assert data["items"][0]["id"] == "hi1"

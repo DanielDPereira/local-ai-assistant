@@ -233,3 +233,27 @@ async def get_errors_metrics(
         "limit": limit,
         "offset": offset,
     }
+
+
+@router.get("/harness")
+async def get_harness_metrics(
+    limit: int = 50,
+    offset: int = 0,
+    db: DatabaseConnection = Depends(get_db)  # noqa: B008
+) -> dict[str, Any]:
+    """Retorna iterações do harness."""
+    query = "SELECT * FROM harness_iterations ORDER BY iteration_number DESC LIMIT ? OFFSET ?"
+
+    with db.get_connection() as conn:
+        cursor = conn.execute(query, (limit, offset))
+        rows = [dict(row) for row in cursor.fetchall()]
+
+        count_cursor = conn.execute("SELECT COUNT(*) as count FROM harness_iterations")
+        total = count_cursor.fetchone()["count"]
+
+    return {
+        "items": rows,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }

@@ -10,7 +10,7 @@ class SkillTelemetry:
 
     def __init__(self, log_file: str | Path) -> None:
         """Inicializa o sistema de telemetria.
-        
+
         Args:
             log_file: Caminho para o arquivo JSONL de logs.
         """
@@ -19,7 +19,7 @@ class SkillTelemetry:
 
     def record_usage(self, skill_name: str, context: str = "") -> None:
         """Registra a utilização de uma skill.
-        
+
         Args:
             skill_name: Nome da skill utilizada.
             context: Contexto opcional ou motivo do uso.

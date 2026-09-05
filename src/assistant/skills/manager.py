@@ -12,7 +12,7 @@ class SkillManager:
 
     def __init__(self, skills_dir: str | Path | None = None, telemetry_file: str | Path | None = None) -> None:
         """Inicializa o gerenciador.
-        
+
         Args:
             skills_dir: Diretório onde as skills estão salvas. Padrão: ~/.local-ai-assistant/skills
             telemetry_file: Arquivo de log para telemetria. Padrão: ~/.local-ai-assistant/telemetry.jsonl
@@ -37,14 +37,14 @@ class SkillManager:
 
     def apply_skill(self, skill_name: str, context: str = "") -> Skill:
         """Carrega (se não estiver em cache), valida e registra o uso da skill.
-        
+
         Args:
             skill_name: Nome da skill.
             context: Contexto de uso para telemetria.
-            
+
         Returns:
             O modelo validado da Skill para ser injetado no prompt do Agent.
-            
+
         Raises:
             FileNotFoundError: Se a skill não existir.
             SkillValidationError: Se a skill tiver formato inválido.

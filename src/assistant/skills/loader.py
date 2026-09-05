@@ -12,7 +12,7 @@ class SkillLoader:
 
     def __init__(self, skills_dir: str | Path) -> None:
         """Inicializa o carregador.
-        
+
         Args:
             skills_dir: Caminho para o diretório de skills.
         """
@@ -20,7 +20,7 @@ class SkillLoader:
 
     def discover(self) -> list[str]:
         """Descobre todas as skills disponíveis (arquivos .json).
-        
+
         Returns:
             Lista com os nomes dos arquivos de skill (sem extensão).
         """
@@ -31,13 +31,13 @@ class SkillLoader:
 
     def load(self, skill_name: str) -> Skill:
         """Carrega e valida uma Skill pelo nome.
-        
+
         Args:
             skill_name: Nome do arquivo da skill (sem extensão).
-            
+
         Returns:
             Objeto Skill populado.
-            
+
         Raises:
             FileNotFoundError: Se o arquivo não existir.
             SkillValidationError: Se o arquivo for inválido.

@@ -1750,7 +1750,7 @@ feat: add GitHub pull request integration
 
 ---
 
-## TASK-150 — Web search
+## [x] TASK-150 — Web search
 
 **Prioridade:** P2
 
@@ -1764,7 +1764,7 @@ feat: add web search tool
 
 ---
 
-## TASK-151 — URL reader
+## [x] TASK-151 — URL reader
 
 **Prioridade:** P2
 
@@ -1778,7 +1778,7 @@ feat: add URL reader
 
 ---
 
-## TASK-152 — Documentation mode
+## [x] TASK-152 — Documentation mode
 
 **Prioridade:** P2
 

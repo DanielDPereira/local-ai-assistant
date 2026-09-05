@@ -1,79 +1,111 @@
-# Assistente de IA Local
+# Local AI Assistant 🧠🚀
 
-Assistente pessoal de Inteligência Artificial executado localmente utilizando [Ollama](https://ollama.com/).
+Um assistente de Inteligência Artificial **100% local, autônomo e focado em privacidade**. 
 
-## Visão Geral
+Projetado para operar em sua máquina Windows utilizando **Ollama**, o Local AI Assistant tem a capacidade de atuar ativamente no seu Workspace, executar comandos, acessar web, manipular repositórios Git/GitHub e consumir servidores MCP (Model Context Protocol). Tudo com uma camada robusta de telemetria e segurança, mantendo seus dados protegidos localmente.
 
-Sistema de IA local capaz de:
+---
 
-- Compreender e planejar tarefas
-- Executar ferramentas (filesystem, terminal, Git, GitHub, web)
-- Validar resultados com evidências objetivas
-- Registrar execuções com telemetria completa
-- Medir desempenho, consumo de hardware e custo computacional
-- Apresentar métricas em dashboard web
+## 🚀 Funcionalidades Principais
 
-## Pré-requisitos
+- **100% Local**: Funciona offline alimentado por modelos rodando na sua própria máquina (via Ollama).
+- **Harness Autônomo**: Loop interno (`PLAN`, `ACT`, `OBSERVE`, `VERIFY`) capaz de pensar, agir, validar a própria ação e corrigir erros autonomamente.
+- **Memória de Longo Prazo**: Sistema de sessão temporária (para contexto rápido) e persistência de memórias com regras e políticas restritas.
+- **Ferramentas Integradas (Tools)**:
+  - **Sistema Operacional:** Acesso de leitura e escrita ao File System, limitados ao seu Workspace.
+  - **Git & GitHub:** Pode criar branchs, commitar, puxar relatórios de Issues e PRs e empurrar código de volta ao repositório.
+  - **Web & Pesquisa:** Busca na web, acesso à documentação de bibliotecas externas e leitura de sites.
+- **Model Context Protocol (MCP)**: Integração via JSON-RPC 2.0 sobre `stdio` para plugar ferramentas adicionais, validado por políticas de Allow/Blocklists.
+- **Segurança Rigorosa**: Bloqueio de comandos destrutivos (como `rm -rf`), boundary de diretório para evitar "path traversals" e detecção/ofuscamento automático de API Keys e Senhas (Secrets Masking).
+- **Extensibilidade (Skills)**: Capacidade de receber instruções e scripts dinâmicos de como realizar tarefas.
 
-- Python >= 3.12
-- [Ollama](https://ollama.com/) instalado e executando
-- Git
+---
 
-### Modelos recomendados
+## 📦 Instalação
+
+### Pré-requisitos
+- Python 3.12+ (O projeto utiliza `uv` ou `pip` para gerenciamento)
+- [Ollama](https://ollama.com) instalado na máquina para servir os modelos.
+
+### Passo a passo
+
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/DanielDPereira/local-ai-assistant.git
+   cd local-ai-assistant
+   ```
+
+2. **Crie e ative o ambiente virtual**
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate
+   ```
+
+3. **Instale as dependências**
+   ```bash
+   pip install -e .[dev]
+   ```
+
+4. **Baixe os modelos recomendados no Ollama**
+   ```bash
+   ollama pull qwen3:4b
+   ollama pull qwen2.5-coder:3b
+   ollama pull qwen3:1.7b
+   ```
+
+---
+
+## 💻 Como Rodar
+
+O assistente expõe seus serviços via uma API FastAPI que também entrega uma Dashboard gráfica leve.
+
+### Subindo o Servidor / Dashboard
+
+Na raiz do projeto, com o seu ambiente ativado, execute:
 
 ```bash
-ollama pull qwen3:4b
-ollama pull qwen2.5-coder:3b
+uvicorn src.assistant.api.main:app --reload
 ```
 
-## Setup
+Acesse no seu navegador:
+👉 **http://localhost:8000** (Dashboard e Chat interativo)
+👉 **http://localhost:8000/docs** (Swagger/Documentação da API)
 
+### Testando a Inteligência Local (CLI)
+
+Se quiser disparar testes end-to-end simulando as capacidades core do Agente:
 ```bash
-# Criar ambiente virtual
-python -m venv .venv
-
-# Ativar (Windows)
-.venv\Scripts\activate
-
-# Ativar (Linux/macOS)
-source .venv/bin/activate
-
-# Instalar em modo desenvolvimento
-pip install -e ".[dev]"
-
-# Configurar variáveis de ambiente
-copy .env.example .env
+.venv\Scripts\pytest tests\integration\test_e2e.py -v -s
 ```
 
-## Desenvolvimento
+---
 
-```bash
-# Executar testes
-pytest
+## 🛠️ Casos de Uso (Use Cases)
 
-# Lint e formatação
-ruff check src/ tests/
-ruff format src/ tests/
+A arquitetura autônoma permite que você passe tarefas abstratas que o Agente destrinchará em múltiplos passos lógicos:
 
-# Type checking
-mypy src/
-```
+### 1. Refatoração de Código e Versionamento Automático
+*"Analise o arquivo `api.py`. Quero que extraia as rotas para um módulo de `routers/`. Faça a refatoração, garanta que nada quebrou, crie uma branch `refatoracao-rotas` e faça um commit de suas mudanças."*
+> **Como ele atua:** Usará `File I/O Tools` para ler e alterar o arquivo localmente no workspace. Em seguida usará `Git Tools` (status, branch, commit) de forma autônoma para criar o histórico seguro da alteração.
 
-## Estrutura do Projeto
+### 2. Pesquisa Externa, Extração e Escrita
+*"Pesquise na web a sintaxe de uso do novo pydantic v2. Crie um script de exemplo testando BaseModel no meu repositório e chame-o de `teste_pydantic.py`."*
+> **Como ele atua:** Usará as `Web Tools` e `Docs Lookup` para baixar o contexto e aprender sobre o pacote, para então usar `File Write Tool` e escrever o arquivo executável na raiz do projeto.
 
-```
-src/assistant/     — Código-fonte principal
-tests/             — Testes (unit, integration, e2e)
-docs/              — Documentação do projeto
-scripts/           — Scripts utilitários
-dashboard/         — Dashboard web (futuro)
-```
+### 3. Recuperação de Memória e Ações Contínuas
+*"Lembra do nosso padrão arquitetural de usar injeção de dependência? Baseado nele, escreva um novo serviço de cache persistente."*
+> **Como ele atua:** O Agente vai varrer a `PersistentMemory` e a `SessionState` para resgatar o contexto do que vocês definiram como padrão arquitetural e usará esse contexto imediatamente no output de código.
 
-## Documentação
+---
 
-- [Especificação Técnica](docs/PROJECT.md)
-- [Backlog](docs/BACKLOG.md)
+## 🛡️ Telemetria e Segurança
+- Logs de segurança são mantidos de forma auditável.
+- Quaisquer comandos enviados ao sistema ou via ferramentas MCP são avaliados pelo módulo de segurança `DestructiveOperationPolicy`.
+- Caso tente visualizar um arquivo, os bounds bloqueiam fugas do diretório principal.
 
-## Licença
+---
 
-MIT
+## 📖 Documentação Adicional
+- **[Backlog do Projeto (Concluído)](docs/BACKLOG.md)**
+- **[Guia Mestre de Design (Initial Prompt)](docs/INITIAL_PROMPT.md)**
+- **[Manuais de Testes de Qualidade](docs/TESTING.md)**

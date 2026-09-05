@@ -1718,7 +1718,7 @@ feat: add GitHub client
 
 ---
 
-## TASK-141 — Issues
+## [x] TASK-141 — Issues
 
 **Prioridade:** P2
 
@@ -1732,7 +1732,7 @@ feat: add GitHub issues integration
 
 ---
 
-## TASK-142 — Pull Requests
+## [x] TASK-142 — Pull Requests
 
 **Prioridade:** P2
 

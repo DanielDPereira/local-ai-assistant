@@ -1704,7 +1704,7 @@ feat: add controlled git push
 
 ---
 
-## TASK-140 — GitHub client
+## [x] TASK-140 — GitHub client
 
 **Prioridade:** P2
 

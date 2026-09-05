@@ -1960,7 +1960,7 @@ feat: add memory policies
 
 ---
 
-## TASK-190 — Workspace boundary
+## [x] TASK-190 — Workspace boundary
 
 **Prioridade:** P0
 
@@ -1974,7 +1974,7 @@ feat: enforce workspace boundaries
 
 ---
 
-## TASK-191 — Secret protection
+## [x] TASK-191 — Secret protection
 
 **Prioridade:** P0
 
@@ -1988,7 +1988,7 @@ feat: add secret protection
 
 ---
 
-## TASK-192 — Destructive operation policy
+## [x] TASK-192 — Destructive operation policy
 
 **Prioridade:** P0
 
@@ -2002,7 +2002,7 @@ feat: add destructive operation policy
 
 ---
 
-## TASK-193 — Audit trail
+## [x] TASK-193 — Audit trail
 
 **Prioridade:** P1
 

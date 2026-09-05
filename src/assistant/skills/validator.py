@@ -16,10 +16,10 @@ class SkillValidator:
     @classmethod
     def validate_dict(cls, data: dict[str, Any]) -> None:
         """Valida se o dicionário possui todos os campos obrigatórios e formatos corretos.
-        
+
         Args:
             data: Dicionário com os dados da Skill.
-            
+
         Raises:
             SkillValidationError: Se a validação falhar.
         """

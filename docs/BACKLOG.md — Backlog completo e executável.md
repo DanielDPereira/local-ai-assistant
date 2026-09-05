@@ -2020,7 +2020,7 @@ feat: add security audit trail
 
 ---
 
-## TASK-200 — Ruff
+## [x] TASK-200 — Ruff
 
 **Prioridade:** P0
 
@@ -2038,7 +2038,7 @@ chore: configure Ruff
 
 ---
 
-## TASK-201 — Mypy
+## [x] TASK-201 — Mypy
 
 **Prioridade:** P0
 
@@ -2052,7 +2052,7 @@ chore: configure mypy
 
 ---
 
-## TASK-202 — Pytest
+## [x] TASK-202 — Pytest
 
 **Prioridade:** P0
 
@@ -2066,7 +2066,7 @@ chore: configure pytest
 
 ---
 
-## TASK-203 — CI
+## [x] TASK-203 — CI
 
 **Prioridade:** P1
 

@@ -1907,7 +1907,7 @@ feat: add MCP telemetry
 
 ---
 
-## TASK-180 — Session state
+## [x] TASK-180 — Session state
 
 **Prioridade:** P2
 
@@ -1921,7 +1921,7 @@ feat: add session state
 
 ---
 
-## TASK-181 — Persistent memory
+## [x] TASK-181 — Persistent memory
 
 **Prioridade:** P3
 
@@ -1942,7 +1942,7 @@ feat: add persistent memory
 
 ---
 
-## TASK-182 — Memory policies
+## [x] TASK-182 — Memory policies
 
 **Prioridade:** P3
 

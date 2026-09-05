@@ -52,7 +52,7 @@ def test_github_client_make_request_error(mock_urlopen: MagicMock) -> None:
         fp=None  # type: ignore
     )
     # Patch the read method of the HTTPError instance
-    mock_error.read = MagicMock(return_value=b'{"message": "Not Found"}')
+    setattr(mock_error, "read", MagicMock(return_value=b'{"message": "Not Found"}'))
     mock_urlopen.side_effect = mock_error
 
     client = GitHubClient(token="fake-token")

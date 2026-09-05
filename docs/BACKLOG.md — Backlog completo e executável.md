@@ -1796,7 +1796,7 @@ feat: add documentation lookup
 
 ---
 
-## TASK-160 — Skill loader
+## [x] TASK-160 — Skill loader
 
 **Prioridade:** P2
 
@@ -1810,7 +1810,7 @@ feat: add skill loader
 
 ---
 
-## TASK-161 — Skill validation
+## [x] TASK-161 — Skill validation
 
 **Prioridade:** P2
 
@@ -1824,7 +1824,7 @@ feat: add skill validation
 
 ---
 
-## TASK-162 — Skill telemetry
+## [x] TASK-162 — Skill telemetry
 
 **Prioridade:** P2
 

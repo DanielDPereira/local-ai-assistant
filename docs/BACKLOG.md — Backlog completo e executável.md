@@ -1847,7 +1847,7 @@ feat: add skill telemetry
 
 ---
 
-## TASK-170 — MCP client
+## [x] TASK-170 — MCP client
 
 **Prioridade:** P2
 
@@ -1861,7 +1861,7 @@ feat: add MCP client
 
 ---
 
-## TASK-171 — MCP tool discovery
+## [x] TASK-171 — MCP tool discovery
 
 **Prioridade:** P2
 
@@ -1875,7 +1875,7 @@ feat: add MCP tool discovery
 
 ---
 
-## TASK-172 — MCP policy
+## [x] TASK-172 — MCP policy
 
 **Prioridade:** P2
 
@@ -1889,7 +1889,7 @@ feat: add MCP security policy
 
 ---
 
-## TASK-173 — MCP telemetry
+## [x] TASK-173 — MCP telemetry
 
 **Prioridade:** P2
 
